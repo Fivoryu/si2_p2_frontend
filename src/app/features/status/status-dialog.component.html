@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Actualizar estado</h2>
+<mat-dialog-content>
+  <p>Estado actual: <strong>{{ data.estado }}</strong></p>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nuevo estado</mat-label>
+      <mat-select formControlName="estado">
+        @for (opt of nextOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Comentario (opcional)</mat-label>
+      <textarea matInput formControlName="comentario" rows="2"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid || saving" (click)="confirm()">
+    Confirmar
+  </button>
+</mat-dialog-actions>

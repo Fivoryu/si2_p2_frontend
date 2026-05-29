@@ -1,0 +1,112 @@
+<div class="page-container">
+  <h1>Administración de tenants</h1>
+
+  <mat-tab-group>
+    <mat-tab label="Listado">
+      @if (loading) {
+        <mat-spinner />
+      } @else {
+        <table mat-table [dataSource]="tenants" class="tenant-table">
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+          </ng-container>
+          <ng-container matColumnDef="dominio">
+            <th mat-header-cell *matHeaderCellDef>Dominio</th>
+            <td mat-cell *matCellDef="let row">{{ row.dominio || '—' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="plan_id">
+            <th mat-header-cell *matHeaderCellDef>Plan</th>
+            <td mat-cell *matCellDef="let row">{{ row.plan_id || '—' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      }
+    </mat-tab>
+
+    <mat-tab label="Crear tenant">
+      <mat-card>
+        <mat-card-content>
+          <form [formGroup]="createForm" (ngSubmit)="createTenant()" class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Dominio</mat-label>
+              <input matInput formControlName="dominio" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Plan ID</mat-label>
+              <mat-select formControlName="plan_id">
+                @for (p of plans; track p.id) {
+                  <mat-option [value]="p.id">{{ p.nombre || p.id }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="createForm.invalid">
+              Crear tenant
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <mat-tab label="Asignar admin">
+      <mat-card>
+        <mat-card-content>
+          <form [formGroup]="adminForm" (ngSubmit)="assignAdmin()" class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Tenant</mat-label>
+              <mat-select formControlName="tenant_id">
+                @for (t of tenants; track t.id) {
+                  <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Email admin</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre (opcional)</mat-label>
+              <input matInput formControlName="nombre" />
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="adminForm.invalid">
+              Asignar admin tenant
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <mat-tab label="Cambiar plan">
+      <mat-card>
+        <mat-card-content>
+          <form [formGroup]="planForm" (ngSubmit)="changePlan()" class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Tenant</mat-label>
+              <mat-select formControlName="tenant_id">
+                @for (t of tenants; track t.id) {
+                  <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Nuevo plan</mat-label>
+              <mat-select formControlName="plan_id">
+                @for (p of plans; track p.id) {
+                  <mat-option [value]="p.id">{{ p.nombre || p.id }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="planForm.invalid">
+              Actualizar plan
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+  </mat-tab-group>
+</div>

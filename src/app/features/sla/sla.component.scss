@@ -1,0 +1,26 @@
+.subtitle {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.new-card {
+  margin-bottom: 24px;
+}
+
+.new-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.sla-table {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+}
+
+.inline-edit {
+  width: 80px;
+  padding: 4px 8px;
+}

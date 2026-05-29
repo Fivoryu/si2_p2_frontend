@@ -1,0 +1,26 @@
+<div class="page-container">
+  <h1>Disponibilidad del taller</h1>
+  @if (loading) {
+    <mat-spinner />
+  } @else if (!taller) {
+    <p>No se encontró taller asociado a su cuenta.</p>
+  } @else {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ taller.nombre || 'Mi taller' }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="save()">
+          <mat-slide-toggle formControlName="disponible">Disponible para asignaciones</mat-slide-toggle>
+          <mat-form-field appearance="outline" class="cap-field">
+            <mat-label>Capacidad máxima</mat-label>
+            <input matInput type="number" formControlName="capacidad_max" min="1" />
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+            Guardar
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,35 @@
+.subtitle {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.empty {
+  color: #888;
+  font-style: italic;
+}
+
+.requests-table {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.actions-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.motivo-field {
+  width: 160px;
+  font-size: 12px;
+}

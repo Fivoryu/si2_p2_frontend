@@ -1,0 +1,14 @@
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 400px;
+  padding: 16px 0;
+}
+
+.tenant-table {
+  width: 100%;
+  margin-top: 16px;
+  background: white;
+  border-radius: 8px;
+}

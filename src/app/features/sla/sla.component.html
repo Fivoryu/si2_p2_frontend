@@ -1,0 +1,58 @@
+<div class="page-container">
+  <h1>Configuración SLA</h1>
+  <p class="subtitle">Tiempos máximos por tipo de incidente (solo admin plataforma)</p>
+
+  <mat-card class="new-card">
+    <mat-card-title>Nuevo SLA</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="newForm" class="new-form" (ngSubmit)="create()">
+        <mat-form-field appearance="outline">
+          <mat-label>ID tipo incidente</mat-label>
+          <input matInput formControlName="tipo_incidente_id" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Tiempo máx. (min)</mat-label>
+          <input matInput type="number" formControlName="tiempo_max_min" />
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="submit" [disabled]="newForm.invalid">
+          Crear
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  @if (loading) {
+    <mat-spinner />
+  } @else {
+    <table mat-table [dataSource]="rows" class="sla-table">
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let row">{{ row.tipo_nombre || row.tipo_incidente_id }}</td>
+      </ng-container>
+      <ng-container matColumnDef="tiempo_max_min">
+        <th mat-header-cell *matHeaderCellDef>Tiempo máx. (min)</th>
+        <td mat-cell *matCellDef="let row">
+          @if (editingId === (row.id ?? row.tipo_incidente_id)) {
+            <input type="number" [(ngModel)]="editValue" class="inline-edit" />
+          } @else {
+            {{ row.tiempo_max_min }}
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          @if (editingId === (row.id ?? row.tipo_incidente_id)) {
+            <button mat-button color="primary" (click)="saveEdit(row)">Guardar</button>
+          } @else {
+            <button mat-icon-button (click)="startEdit(row)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  }
+</div>
