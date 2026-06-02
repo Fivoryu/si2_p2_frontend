@@ -1,34 +1,51 @@
-.header-row {
+.page-header__actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--ui-space-sm);
+  margin-top: var(--ui-space-md);
 }
 
 .toolbar-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--ui-space-sm);
+}
+
+.filters-card {
+  margin-bottom: var(--ui-space-xl);
 }
 
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--ui-space-lg);
   align-items: center;
-  margin-bottom: 24px;
 }
 
 .kpi-table {
   width: 100%;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
-.chart-box h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 500;
+.chart-box {
+  h3 {
+    margin: 0 0 var(--ui-space-sm);
+    padding: var(--ui-space-lg) var(--ui-space-xl) 0;
+    font-size: var(--ui-font-size-md);
+    font-weight: 600;
+    color: var(--ui-color-text);
+  }
+
+  .echarts {
+    padding: 0 var(--ui-space-md) var(--ui-space-md);
+  }
+}
+
+.kpi-card .kpi-value {
+  color: var(--ui-color-primary-hover);
+}
+
+.empty-state--inline {
+  border: none;
+  box-shadow: none;
+  padding: var(--ui-space-xl);
+  min-height: 200px;
 }

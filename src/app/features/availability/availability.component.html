@@ -1,26 +1,49 @@
 <div class="page-container">
-  <h1>Disponibilidad del taller</h1>
-  @if (loading) {
-    <mat-spinner />
-  } @else if (!taller) {
-    <p>No se encontró taller asociado a su cuenta.</p>
+  <header class="page-header">
+    <h1>Disponibilidad del taller</h1>
+    <p class="page-header__subtitle">
+      Indique si su taller está disponible para recibir nuevas asignaciones y defina la capacidad
+      máxima de servicios simultáneos.
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-wrap">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (!taller()) {
+    <div class="empty-state">
+      <mat-icon>store</mat-icon>
+      <p class="empty-state__title">Taller no encontrado</p>
+      <p class="empty-state__text">
+        No se encontró un taller asociado a su cuenta. Contacte al administrador de su tenant.
+      </p>
+    </div>
   } @else {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ taller.nombre || 'Mi taller' }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="form" (ngSubmit)="save()">
-          <mat-slide-toggle formControlName="disponible">Disponible para asignaciones</mat-slide-toggle>
-          <mat-form-field appearance="outline" class="cap-field">
-            <mat-label>Capacidad máxima</mat-label>
-            <input matInput type="number" formControlName="capacidad_max" min="1" />
-          </mat-form-field>
-          <button mat-flat-button color="primary" type="submit" [disabled]="saving">
-            Guardar
-          </button>
+    <div class="page-card">
+      <div class="page-card__header">{{ taller()!.nombre || 'Mi taller' }}</div>
+      <div class="page-card__body">
+        <form [formGroup]="form" (ngSubmit)="save()" class="availability-form">
+          <ui-form-field helper="Solo los talleres disponibles reciben nuevas asignaciones">
+            <ui-checkbox formControlName="disponible">
+              Disponible para asignaciones
+            </ui-checkbox>
+          </ui-form-field>
+
+          <ui-form-field
+            label="Capacidad máxima"
+            helper="Servicios simultáneos que puede atender"
+          >
+            <ui-input formControlName="capacidad_max" type="number" placeholder="5" />
+          </ui-form-field>
+
+          <div class="availability-form__actions">
+            <ui-button type="submit" variant="primary" [loading]="saving()">
+              Guardar cambios
+            </ui-button>
+          </div>
         </form>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   }
 </div>

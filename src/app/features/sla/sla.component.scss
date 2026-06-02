@@ -1,26 +1,22 @@
-.subtitle {
-  color: #666;
-  margin-bottom: 24px;
-}
-
 .new-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--ui-space-xl);
 }
 
 .new-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--ui-space-lg);
   align-items: center;
 }
 
 .sla-table {
   width: 100%;
-  background: white;
-  border-radius: 8px;
 }
 
 .inline-edit {
   width: 80px;
   padding: 4px 8px;
+  border: 1px solid var(--ui-color-border);
+  border-radius: var(--ui-radius-sm);
+  font-family: inherit;
 }

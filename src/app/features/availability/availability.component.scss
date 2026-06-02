@@ -1,10 +1,9 @@
-mat-slide-toggle {
-  display: block;
-  margin-bottom: 16px;
-}
+.availability-form {
+  max-width: 420px;
 
-.cap-field {
-  display: block;
-  width: 200px;
-  margin-bottom: 16px;
+  &__actions {
+    margin-top: var(--ui-space-md);
+    padding-top: var(--ui-space-md);
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+  }
 }

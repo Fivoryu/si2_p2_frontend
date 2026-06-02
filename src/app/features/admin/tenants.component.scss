@@ -1,14 +1,23 @@
+.tenants-panel {
+  overflow: hidden;
+}
+
+.tab-form {
+  max-width: 440px;
+}
+
 .form-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-width: 400px;
-  padding: 16px 0;
+  gap: var(--ui-space-sm);
 }
 
 .tenant-table {
   width: 100%;
-  margin-top: 16px;
-  background: white;
-  border-radius: 8px;
+}
+
+.empty-state--inline {
+  border: none;
+  box-shadow: none;
+  margin: var(--ui-space-xl);
 }

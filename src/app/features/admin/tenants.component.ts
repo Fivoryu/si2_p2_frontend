@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ApiService } from '../../core/api.service';
 
@@ -36,6 +37,7 @@ interface PlanOption {
     MatSelectModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
+    MatIconModule,
     MatTabsModule,
   ],
   templateUrl: './tenants.component.html',

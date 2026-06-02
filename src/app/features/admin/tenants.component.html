@@ -1,33 +1,46 @@
 <div class="page-container">
-  <h1>Administración de tenants</h1>
+  <header class="page-header">
+    <h1>Gestión multi-tenant</h1>
+    <p class="page-header__subtitle">
+      Cree tenants, asigne administradores y configure planes de servicio de la plataforma.
+    </p>
+  </header>
 
-  <mat-tab-group>
-    <mat-tab label="Listado">
-      @if (loading) {
-        <mat-spinner />
-      } @else {
-        <table mat-table [dataSource]="tenants" class="tenant-table">
-          <ng-container matColumnDef="nombre">
-            <th mat-header-cell *matHeaderCellDef>Nombre</th>
-            <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
-          </ng-container>
-          <ng-container matColumnDef="dominio">
-            <th mat-header-cell *matHeaderCellDef>Dominio</th>
-            <td mat-cell *matCellDef="let row">{{ row.dominio || '—' }}</td>
-          </ng-container>
-          <ng-container matColumnDef="plan_id">
-            <th mat-header-cell *matHeaderCellDef>Plan</th>
-            <td mat-cell *matCellDef="let row">{{ row.plan_id || '—' }}</td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-      }
-    </mat-tab>
+  <div class="page-card tenants-panel">
+    <mat-tab-group animationDuration="200ms">
+      <mat-tab label="Listado">
+        @if (loading) {
+          <div class="loading-wrap">
+            <mat-spinner diameter="40" />
+          </div>
+        } @else if (tenants.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>business</mat-icon>
+            <p class="empty-state__title">Sin tenants registrados</p>
+            <p class="empty-state__text">Use la pestaña «Crear tenant» para registrar la primera organización.</p>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="tenants" class="tenant-table">
+            <ng-container matColumnDef="nombre">
+              <th mat-header-cell *matHeaderCellDef>Nombre</th>
+              <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+            </ng-container>
+            <ng-container matColumnDef="dominio">
+              <th mat-header-cell *matHeaderCellDef>Dominio</th>
+              <td mat-cell *matCellDef="let row">{{ row.dominio || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="plan_id">
+              <th mat-header-cell *matHeaderCellDef>Plan</th>
+              <td mat-cell *matCellDef="let row">{{ row.plan_id || '—' }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        }
+      </mat-tab>
 
-    <mat-tab label="Crear tenant">
-      <mat-card>
-        <mat-card-content>
+      <mat-tab label="Crear tenant">
+        <div class="page-card__body tab-form">
           <form [formGroup]="createForm" (ngSubmit)="createTenant()" class="form-grid">
             <mat-form-field appearance="outline">
               <mat-label>Nombre</mat-label>
@@ -49,13 +62,11 @@
               Crear tenant
             </button>
           </form>
-        </mat-card-content>
-      </mat-card>
-    </mat-tab>
+        </div>
+      </mat-tab>
 
-    <mat-tab label="Asignar admin">
-      <mat-card>
-        <mat-card-content>
+      <mat-tab label="Asignar admin">
+        <div class="page-card__body tab-form">
           <form [formGroup]="adminForm" (ngSubmit)="assignAdmin()" class="form-grid">
             <mat-form-field appearance="outline">
               <mat-label>Tenant</mat-label>
@@ -77,13 +88,11 @@
               Asignar admin tenant
             </button>
           </form>
-        </mat-card-content>
-      </mat-card>
-    </mat-tab>
+        </div>
+      </mat-tab>
 
-    <mat-tab label="Cambiar plan">
-      <mat-card>
-        <mat-card-content>
+      <mat-tab label="Cambiar plan">
+        <div class="page-card__body tab-form">
           <form [formGroup]="planForm" (ngSubmit)="changePlan()" class="form-grid">
             <mat-form-field appearance="outline">
               <mat-label>Tenant</mat-label>
@@ -105,8 +114,8 @@
               Actualizar plan
             </button>
           </form>
-        </mat-card-content>
-      </mat-card>
-    </mat-tab>
-  </mat-tab-group>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

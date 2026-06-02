@@ -63,6 +63,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
   displayedColumns = ['resumen_ia', 'tipo', 'prioridad', 'estado', 'acciones'];
   private sockets = new Map<string, WebSocket>();
   rejectMotivos = new Map<string, string>();
+  private busyIds = new Set<string>();
 
   ngOnInit(): void {
     this.load();
@@ -138,6 +139,8 @@ export class RequestsComponent implements OnInit, OnDestroy {
       this.snack.open('Sin asignación vinculada', 'Cerrar', { duration: 3000 });
       return;
     }
+    if (this.isBusy(row.id)) return;
+    this.busyIds.add(row.id);
     this.api
       .post(`/asignaciones/${row.asignacion_id}/aceptar`, {
         tecnico_id: row.tecnico_id,
@@ -146,24 +149,32 @@ export class RequestsComponent implements OnInit, OnDestroy {
         next: () => {
           this.snack.open('Solicitud aceptada', 'OK', { duration: 2000 });
           this.patchRow(row.id, 'EN_CAMINO');
+          this.busyIds.delete(row.id);
         },
-        error: (e) =>
-          this.snack.open(e?.error?.detail ?? 'Error al aceptar', 'Cerrar', { duration: 4000 }),
+        error: (e) => {
+          this.busyIds.delete(row.id);
+          this.snack.open(e?.error?.detail ?? 'Error al aceptar', 'Cerrar', { duration: 4000 });
+        },
       });
   }
 
   rechazar(row: IncidenteRow): void {
     if (!row.asignacion_id) return;
+    if (this.isBusy(row.id)) return;
     const motivo = this.rejectMotivos.get(row.id) ?? 'No disponible';
+    this.busyIds.add(row.id);
     this.api
       .post(`/asignaciones/${row.asignacion_id}/rechazar`, { motivo })
       .subscribe({
         next: () => {
           this.snack.open('Solicitud rechazada', 'OK', { duration: 2000 });
           this.incidentes = this.incidentes.filter((i) => i.id !== row.id);
+          this.busyIds.delete(row.id);
         },
-        error: (e) =>
-          this.snack.open(e?.error?.detail ?? 'Error al rechazar', 'Cerrar', { duration: 4000 }),
+        error: (e) => {
+          this.busyIds.delete(row.id);
+          this.snack.open(e?.error?.detail ?? 'Error al rechazar', 'Cerrar', { duration: 4000 });
+        },
       });
   }
 
@@ -179,6 +190,10 @@ export class RequestsComponent implements OnInit, OnDestroy {
     ref.afterClosed().subscribe((ok) => {
       if (ok) this.load();
     });
+  }
+
+  isBusy(incidenteId: string): boolean {
+    return this.busyIds.has(incidenteId);
   }
 
   ngOnDestroy(): void {
