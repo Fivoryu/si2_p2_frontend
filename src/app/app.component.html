@@ -1,31 +1,45 @@
-@if (showShell()) {
-  <mat-sidenav-container class="shell">
-    <mat-sidenav mode="side" opened class="sidenav">
-      <div class="brand">
-        <mat-icon>car_repair</mat-icon>
-        <span>Emergencias</span>
-      </div>
-      <mat-nav-list>
-        @for (item of visibleNav(); track item.path) {
-          <a mat-list-item [routerLink]="item.path" routerLinkActive="active">
-            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-            <span matListItemTitle>{{ item.label }}</span>
-          </a>
-        }
-      </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <mat-toolbar color="primary">
-        <span>Panel de taller</span>
-        <span class="spacer"></span>
-        <span class="role-badge">{{ roleLabel() }}</span>
-        <button mat-icon-button (click)="logout()" aria-label="Cerrar sesión">
-          <mat-icon>logout</mat-icon>
-        </button>
-      </mat-toolbar>
-      <router-outlet />
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-} @else {
-  <router-outlet />
-}
+@if (showShell()) {
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <div class="app-sidebar__brand">
+        <mat-icon class="app-sidebar__logo">car_repair</mat-icon>
+        <div class="app-sidebar__brand-text">
+          <span class="app-sidebar__title">Emergencias</span>
+          <span class="app-sidebar__tagline">Panel operativo</span>
+        </div>
+      </div>
+
+      <nav class="app-sidebar__nav" aria-label="Navegación principal">
+        @for (item of visibleNav(); track item.path) {
+          <a
+            class="app-sidebar__link"
+            [routerLink]="item.path"
+            routerLinkActive="app-sidebar__link--active"
+          >
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="app-sidebar__footer">
+        <button type="button" class="app-sidebar__logout" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <h1 class="app-topbar__title">{{ pageTitle() }}</h1>
+        <span class="app-topbar__badge">{{ roleLabel() }}</span>
+      </header>
+      <main class="app-content">
+        <router-outlet />
+      </main>
+    </div>
+  </div>
+} @else {
+  <router-outlet />
+}

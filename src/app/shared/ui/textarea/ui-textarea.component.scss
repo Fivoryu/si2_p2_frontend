@@ -1,0 +1,14 @@
+@use '../../../../styles/ui-controls' as ui;
+
+:host {
+  display: block;
+}
+
+.ui-textarea {
+  @include ui.ui-field-base;
+  width: 100%;
+  min-height: 120px;
+  padding: var(--ui-space-md) var(--ui-space-lg);
+  resize: vertical;
+  line-height: 1.5;
+}

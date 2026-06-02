@@ -1,0 +1,20 @@
+@use '../../../../styles/ui-controls' as ui;
+
+:host {
+  display: block;
+}
+
+.ui-input {
+  @include ui.ui-field-base;
+  @include ui.ui-field-size(var(--ui-control-height-md));
+
+  &--sm {
+    @include ui.ui-field-size(var(--ui-control-height-sm));
+    font-size: var(--ui-font-size-sm);
+  }
+
+  &--lg {
+    @include ui.ui-field-size(var(--ui-control-height-lg));
+    font-size: var(--ui-font-size-lg);
+  }
+}

@@ -28,10 +28,32 @@ export class AuthService {
     private router: Router
   ) {}
 
-  login(email: string, password: string) {
+  login(email: string, password: string, tenantId?: string) {
+    const body: { email: string; password: string; tenant_id?: string } = { email, password };
+    if (tenantId) body.tenant_id = tenantId;
     return this.http
-      .post<LoginResponse>(`${this.base}/auth/login`, { email, password })
+      .post<LoginResponse>(`${this.base}/auth/login`, body)
       .pipe(tap((r) => localStorage.setItem(this.storageKey, r.access_token)));
+  }
+
+  registerConductor(payload: {
+    nombre: string;
+    email: string;
+    telefono?: string;
+    password: string;
+  }) {
+    return this.http.post<{ id: string }>(`${this.base}/auth/register`, payload);
+  }
+
+  forgotPassword(email: string) {
+    return this.http.post<{ detail: string }>(`${this.base}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post<void>(`${this.base}/auth/reset-password`, {
+      token,
+      new_password: newPassword,
+    });
   }
 
   get token(): string | null {

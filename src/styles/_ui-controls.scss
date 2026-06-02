@@ -1,0 +1,44 @@
+@mixin ui-field-base {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+  font-size: var(--ui-font-size-md);
+  color: var(--ui-color-text);
+  background: var(--ui-color-surface);
+  border: 1px solid var(--ui-color-border);
+  border-radius: var(--ui-radius-md);
+  transition: border-color var(--ui-transition), box-shadow var(--ui-transition);
+
+  &::placeholder {
+    color: var(--ui-color-text-muted);
+  }
+
+  &:hover:not(:disabled):not(:read-only) {
+    border-color: #94a3b8;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--ui-color-border-focus);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  }
+
+  &:disabled {
+    background: var(--ui-color-background);
+    color: var(--ui-color-text-muted);
+    cursor: not-allowed;
+  }
+
+  &.ui-invalid {
+    border-color: var(--ui-color-danger);
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+  }
+}
+
+@mixin ui-field-size($height) {
+  min-height: $height;
+  padding: 0 var(--ui-space-lg);
+}

@@ -1,0 +1,45 @@
+@use '../../../../styles/ui-controls' as ui;
+
+:host {
+  display: block;
+}
+
+.ui-select-wrap {
+  position: relative;
+
+  &--sm .ui-select {
+    @include ui.ui-field-size(var(--ui-control-height-sm));
+    font-size: var(--ui-font-size-sm);
+    padding-right: 36px;
+  }
+
+  &--md .ui-select {
+    @include ui.ui-field-size(var(--ui-control-height-md));
+    padding-right: 40px;
+  }
+
+  &--lg .ui-select {
+    @include ui.ui-field-size(var(--ui-control-height-lg));
+    font-size: var(--ui-font-size-lg);
+    padding-right: 44px;
+  }
+}
+
+.ui-select {
+  @include ui.ui-field-base;
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+}
+
+.ui-select__chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--ui-color-text-muted);
+  border-bottom: 2px solid var(--ui-color-text-muted);
+  transform: translateY(-65%) rotate(45deg);
+  pointer-events: none;
+}

@@ -1,65 +1,109 @@
-import { Component, computed, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
+import { Component, computed, inject, signal } from '@angular/core';
+
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
 import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+
+import { filter } from 'rxjs/operators';
+
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { AuthService } from './core/auth.service';
 
-interface NavItem {
-  label: string;
-  path: string;
-  icon: string;
-  roles: string[];
-}
+import { isPublicAppRoute } from './core/public-routes';
+
+import { navItemsForRole, ROLE_LABELS } from './core/app-nav.config';
+
+
 
 @Component({
+
   selector: 'app-root',
+
   standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatListModule,
-  ],
+
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatIconModule],
+
   templateUrl: './app.component.html',
+
   styleUrl: './app.component.scss',
+
 })
+
 export class AppComponent {
+
   private auth = inject(AuthService);
+
   private router = inject(Router);
 
-  showShell = computed(() => !this.router.url.startsWith('/login'));
 
-  navItems: NavItem[] = [
-    { label: 'Solicitudes', path: '/requests', icon: 'inbox', roles: ['TALLER', 'ADMIN_TENANT'] },
-    { label: 'Disponibilidad', path: '/availability', icon: 'toggle_on', roles: ['TALLER'] },
-    { label: 'KPIs', path: '/kpis', icon: 'bar_chart', roles: ['ADMIN_TENANT', 'ADMIN_PLATAFORMA'] },
-    { label: 'SLA', path: '/sla', icon: 'schedule', roles: ['ADMIN_PLATAFORMA'] },
-    { label: 'Tenants', path: '/admin/tenants', icon: 'business', roles: ['ADMIN_PLATAFORMA'] },
-  ];
 
-  visibleNav = computed(() => {
-    const role = this.auth.role;
-    if (!role) return [];
-    return this.navItems.filter((n) => n.roles.includes(role));
+  pageTitle = signal('Panel');
+
+  /** Reactive route path so showShell recomputes after login/navigation. */
+  private currentUrl = signal(this.router.url);
+
+  showShell = computed(() => {
+    if (isPublicAppRoute(this.currentUrl())) {
+      return false;
+    }
+    return this.auth.isLoggedIn;
   });
 
-  roleLabel = computed(() => {
-    const map: Record<string, string> = {
-      TALLER: 'Taller',
-      ADMIN_TENANT: 'Admin tenant',
-      ADMIN_PLATAFORMA: 'Admin plataforma',
-    };
-    return map[this.auth.role ?? ''] ?? this.auth.role ?? '';
-  });
+
+
+  visibleNav = computed(() => navItemsForRole(this.auth.role));
+
+
+
+  roleLabel = computed(() => ROLE_LABELS[this.auth.role ?? ''] ?? this.auth.role ?? '');
+
+
+
+  constructor() {
+
+    this.router.events
+
+      .pipe(
+
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+
+        takeUntilDestroyed()
+
+      )
+
+      .subscribe(() => {
+        this.currentUrl.set(this.router.url);
+        this.syncPageTitle();
+      });
+
+    this.syncPageTitle();
+
+  }
+
+
 
   logout(): void {
+
     this.auth.logout();
+
   }
+
+
+
+  private syncPageTitle(): void {
+
+    let route = this.router.routerState.root;
+
+    while (route.firstChild) {
+
+      route = route.firstChild;
+
+    }
+
+    this.pageTitle.set((route.snapshot.data['title'] as string) ?? 'Panel');
+
+  }
+
 }
+
