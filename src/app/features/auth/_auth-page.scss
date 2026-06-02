@@ -1,0 +1,133 @@
+.auth-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ui-font-family);
+  color: #e2e8f0;
+
+  &__bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 20%, rgba(249, 115, 22, 0.14), transparent 55%),
+      linear-gradient(165deg, #0b1120 0%, #111827 45%, #0f172a 100%);
+  }
+
+  &__back {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 20px 24px 0;
+    padding: 8px 14px;
+    width: fit-content;
+    border-radius: var(--ui-radius-full);
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    .material-icons {
+      font-size: 18px;
+    }
+
+    &:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &__main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: var(--ui-radius-xl);
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+
+  &__header {
+    margin-bottom: var(--ui-space-xl);
+
+    h1 {
+      margin: 0 0 var(--ui-space-sm);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    p {
+      margin: 0;
+      color: #94a3b8;
+      font-size: var(--ui-font-size-sm);
+      line-height: 1.5;
+    }
+  }
+
+  &__form {
+    display: block;
+  }
+
+  &__success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ui-space-md);
+    text-align: center;
+    padding: var(--ui-space-lg) 0;
+
+    .material-icons {
+      font-size: 48px;
+      color: var(--ui-color-primary);
+    }
+
+    p {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: var(--ui-font-size-sm);
+      line-height: 1.5;
+    }
+  }
+
+  &__hint {
+    font-size: var(--ui-font-size-xs) !important;
+    color: #64748b !important;
+
+    a {
+      color: var(--ui-color-primary);
+    }
+  }
+
+  &__footer {
+    margin-top: var(--ui-space-xl);
+    text-align: center;
+    font-size: var(--ui-font-size-sm);
+
+    a {
+      color: var(--ui-color-primary);
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

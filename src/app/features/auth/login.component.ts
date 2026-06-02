@@ -1,26 +1,21 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/auth.service';
 import { defaultRouteForRole } from '../../core/auth.guard';
+import { UiButton, UiFormField, UiInput } from '../../shared/ui';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
+    RouterLink,
     MatSnackBarModule,
+    UiButton,
+    UiFormField,
+    UiInput,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -39,16 +34,23 @@ export class LoginComponent {
   });
 
   readonly demos = [
-    { label: 'Taller (workshop)', email: 'centro@auxilionorte.com', password: 'password123' },
+    { label: 'Taller', email: 'centro@auxilionorte.com', password: 'password123' },
     { label: 'Admin tenant', email: 'ana@auxilionorte.com', password: 'password123' },
     { label: 'Admin plataforma', email: 'admin@plataforma.com', password: 'password123' },
   ];
 
   fillDemo(email: string, password: string): void {
     this.form.patchValue({ email, password });
+    this.snack.open('Credenciales demo cargadas', undefined, { duration: 2000 });
+  }
+
+  invalid(field: 'email' | 'password'): boolean {
+    const c = this.form.controls[field];
+    return c.touched && c.invalid;
   }
 
   submit(): void {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
     this.loading = true;
     const { email, password } = this.form.getRawValue();

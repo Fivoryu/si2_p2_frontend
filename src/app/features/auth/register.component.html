@@ -1,0 +1,120 @@
+<div class="register-page">
+  <app-marketing-header />
+
+  <main class="register-main">
+    <div class="register-card">
+      <h1>Crear cuenta</h1>
+      <p class="register-card__lead">
+        Elija el tipo de cuenta. Los planes para redes de talleres se facturan en
+        <strong>bolivianos (Bs.)</strong> al mes.
+      </p>
+
+      <div class="register-tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          [class.active]="accountType() === 'conductor'"
+          (click)="setType('conductor')"
+        >
+          Soy conductor
+        </button>
+        <button
+          type="button"
+          role="tab"
+          [class.active]="accountType() === 'taller'"
+          (click)="setType('taller')"
+        >
+          Red de talleres (SaaS)
+        </button>
+      </div>
+
+      @if (accountType() === 'conductor') {
+        <form [formGroup]="conductorForm" (ngSubmit)="submitConductor()">
+          <ui-form-field label="Nombre completo" [required]="true">
+            <ui-input formControlName="nombre" placeholder="Su nombre" [invalid]="invalidConductor('nombre')" />
+          </ui-form-field>
+          <ui-form-field label="Correo electrónico" [required]="true">
+            <ui-input
+              formControlName="email"
+              type="email"
+              placeholder="correo@ejemplo.com"
+              [invalid]="invalidConductor('email')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Teléfono" hint="Opcional">
+            <ui-input formControlName="telefono" type="tel" placeholder="70000000" />
+          </ui-form-field>
+          <ui-form-field label="Contraseña" [required]="true">
+            <ui-input
+              formControlName="password"
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              [invalid]="invalidConductor('password')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Confirmar contraseña" [required]="true">
+            <ui-input formControlName="password2" type="password" [invalid]="invalidConductor('password2')" />
+          </ui-form-field>
+          <ui-button type="submit" variant="primary" [block]="true" [loading]="loading()">
+            Registrarme como conductor
+          </ui-button>
+        </form>
+      } @else {
+        <form [formGroup]="tallerForm" (ngSubmit)="submitTaller()">
+          <ui-form-field label="Nombre de la red / empresa" [required]="true">
+            <ui-input
+              formControlName="nombre_organizacion"
+              placeholder="Ej. Auxilio Norte S.R.L."
+              [invalid]="invalidTaller('nombre_organizacion')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Dominio web" hint="Opcional, ej. miempresa.com">
+            <ui-input formControlName="dominio" placeholder="miempresa.com" />
+          </ui-form-field>
+          <ui-form-field label="Plan mensual (Bs.)" [required]="true">
+            <ui-select
+              formControlName="plan_id"
+              [options]="planOptions()"
+              placeholder="Seleccione plan"
+              [invalid]="invalidTaller('plan_id')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Nombre del administrador" [required]="true">
+            <ui-input
+              formControlName="admin_nombre"
+              [invalid]="invalidTaller('admin_nombre')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Correo del administrador" [required]="true">
+            <ui-input
+              formControlName="admin_email"
+              type="email"
+              [invalid]="invalidTaller('admin_email')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Teléfono">
+            <ui-input formControlName="admin_telefono" type="tel" />
+          </ui-form-field>
+          <ui-form-field label="Contraseña" [required]="true">
+            <ui-input
+              formControlName="password"
+              type="password"
+              [invalid]="invalidTaller('password')"
+            />
+          </ui-form-field>
+          <ui-form-field label="Confirmar contraseña" [required]="true">
+            <ui-input formControlName="password2" type="password" />
+          </ui-form-field>
+          <ui-button type="submit" variant="primary" [block]="true" [loading]="loading()">
+            Contratar y crear red
+          </ui-button>
+        </form>
+      }
+
+      <p class="register-footer">
+        ¿Ya tiene cuenta? <a routerLink="/login">Iniciar sesión</a>
+        · <a routerLink="/">Volver al inicio</a>
+      </p>
+    </div>
+  </main>
+</div>

@@ -1,35 +1,105 @@
 <div class="login-page">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Emergencias — Acceso taller</mat-card-title>
-      <mat-card-subtitle>Inicie sesión con su cuenta</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" autocomplete="username" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
-          <input matInput type="password" formControlName="password" autocomplete="current-password" />
-        </mat-form-field>
-        <button mat-flat-button color="primary" type="submit" class="full-width" [disabled]="loading || form.invalid">
-          @if (loading) {
-            <mat-spinner diameter="20" />
-          } @else {
-            Ingresar
-          }
-        </button>
+  <div class="login-page__bg" aria-hidden="true"></div>
+
+  <a routerLink="/" class="login-page__back">
+    <span class="material-icons" aria-hidden="true">arrow_back</span>
+    Volver al inicio
+  </a>
+
+  <main class="login-page__main">
+    <section class="login-aside" aria-label="Presentación">
+      <a routerLink="/" class="login-aside__brand">
+        <span class="login-aside__logo">
+          <span class="material-icons" aria-hidden="true">car_repair</span>
+        </span>
+        <span class="login-aside__name">Emergencias<span>BO</span></span>
+      </a>
+      <h1>Panel de taller y administración</h1>
+      <p class="login-aside__lead">
+        Gestione solicitudes de emergencia, disponibilidad de talleres y KPIs de su red en tiempo real.
+      </p>
+      <ul class="login-aside__ perks">
+        <li>
+          <span class="material-icons" aria-hidden="true">inbox</span>
+          Bandeja de solicitudes en vivo
+        </li>
+        <li>
+          <span class="material-icons" aria-hidden="true">payments</span>
+          Pagos y facturación en Bs.
+        </li>
+        <li>
+          <span class="material-icons" aria-hidden="true">analytics</span>
+          Indicadores y SLA por tenant
+        </li>
+      </ul>
+    </section>
+
+    <div class="login-mobile-brand">
+      <a routerLink="/" class="login-mobile-brand__link">
+        <span class="login-aside__logo">
+          <span class="material-icons" aria-hidden="true">car_repair</span>
+        </span>
+        <span class="login-aside__name">Emergencias<span>BO</span></span>
+      </a>
+    </div>
+
+    <section class="login-card" aria-labelledby="login-title">
+      <header class="login-card__header">
+        <h2 id="login-title">Iniciar sesión</h2>
+        <p>Ingrese sus credenciales para acceder al panel</p>
+      </header>
+
+      <form class="login-card__form" [formGroup]="form" (ngSubmit)="submit()">
+        <ui-form-field label="Correo electrónico" [required]="true">
+          <ui-input
+            formControlName="email"
+            type="email"
+            placeholder="correo@taller.com"
+            autocomplete="username"
+            [invalid]="invalid('email')"
+          />
+        </ui-form-field>
+
+        <ui-form-field label="Contraseña" [required]="true">
+          <ui-input
+            formControlName="password"
+            type="password"
+            placeholder="Su contraseña"
+            autocomplete="current-password"
+            [invalid]="invalid('password')"
+          />
+        </ui-form-field>
+
+        <p class="login-card__forgot">
+          <a routerLink="/recuperar-contrasena">¿Olvidó su contraseña?</a>
+        </p>
+
+        <ui-button type="submit" variant="primary" [block]="true" [loading]="loading">
+          Ingresar al panel
+        </ui-button>
       </form>
-      <div class="demo-section">
-        <p class="demo-title">Cuentas demo:</p>
-        @for (d of demos; track d.email) {
-          <button mat-stroked-button type="button" class="demo-btn" (click)="fillDemo(d.email, d.password)">
-            {{ d.label }}
-          </button>
-        }
+
+      <div class="login-demo">
+        <p class="login-demo__title">
+          <span class="material-icons" aria-hidden="true">science</span>
+          Acceso rápido · cuentas demo
+        </p>
+        <div class="login-demo__grid">
+          @for (d of demos; track d.email) {
+            <button type="button" class="login-demo__chip" (click)="fillDemo(d.email, d.password)">
+              <span class="login-demo__chip-label">{{ d.label }}</span>
+              <span class="login-demo__chip-email">{{ d.email }}</span>
+            </button>
+          }
+        </div>
       </div>
-    </mat-card-content>
-  </mat-card>
+
+      <footer class="login-card__footer">
+        <p>
+          ¿No tiene cuenta?
+          <a routerLink="/registro">Crear cuenta</a>
+        </p>
+      </footer>
+    </section>
+  </main>
 </div>
