@@ -1,0 +1,84 @@
+<div class="ds-page">
+  <header class="ds-hero">
+    <p class="ds-hero__eyebrow">Design system · Taller automotriz</p>
+    <h1>Componentes UI</h1>
+    <p class="ds-hero__lead">
+      Kit basado en el dashboard de reparación vehicular (Figma Community). Tokens naranja + panel oscuro.
+    </p>
+  </header>
+
+  <section class="ds-section">
+    <h2>Botones</h2>
+    <div class="ds-row">
+      <ui-button variant="primary">Primary</ui-button>
+      <ui-button variant="secondary">Secondary</ui-button>
+      <ui-button variant="outline">Outline</ui-button>
+      <ui-button variant="ghost">Ghost</ui-button>
+      <ui-button variant="danger">Danger</ui-button>
+    </div>
+    <div class="ds-row">
+      <ui-button size="sm">Small</ui-button>
+      <ui-button size="md">Medium</ui-button>
+      <ui-button size="lg">Large</ui-button>
+      <ui-button [loading]="true">Cargando</ui-button>
+      <ui-button [disabled]="true">Deshabilitado</ui-button>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2>Formulario de ejemplo</h2>
+    <p class="ds-section__desc">Reactive Forms + ControlValueAccessor (Angular 18).</p>
+
+    <form class="ds-form-card" [formGroup]="demoForm" (ngSubmit)="submit()">
+      <ui-form-field label="Nombre del conductor" [required]="true">
+        <ui-input
+          formControlName="nombre"
+          placeholder="Ej. Carlos Pérez"
+          [invalid]="invalid('nombre')"
+        />
+      </ui-form-field>
+
+      <ui-form-field label="Correo" hint="Usado para notificaciones" [required]="true">
+        <ui-input
+          formControlName="email"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          autocomplete="email"
+          [invalid]="invalid('email')"
+        />
+      </ui-form-field>
+
+      <ui-form-field label="Tipo de servicio" [required]="true">
+        <ui-select
+          formControlName="servicio"
+          [options]="serviceOptions"
+          placeholder="Elija un servicio"
+          [invalid]="invalid('servicio')"
+        />
+      </ui-form-field>
+
+      <ui-form-field label="Fecha preferida" [required]="true">
+        <ui-calendar formControlName="fecha" [invalid]="invalid('fecha')" />
+      </ui-form-field>
+
+      <ui-form-field label="Detalle del problema" helper="Opcional">
+        <ui-textarea
+          formControlName="notas"
+          placeholder="Describa síntomas, ubicación, etc."
+          [rows]="4"
+        />
+      </ui-form-field>
+
+      <ui-checkbox formControlName="urgente">Marcar como urgente</ui-checkbox>
+
+      <div class="ds-form-actions">
+        <ui-button type="button" variant="ghost" (clicked)="reset()">Limpiar</ui-button>
+        <ui-button type="submit" variant="primary" [block]="true">Enviar solicitud</ui-button>
+      </div>
+
+      @if (submitted && demoForm.valid) {
+        <p class="ds-success" role="status">Formulario válido — listo para integrar con API.</p>
+      }
+    </form>
+  </section>
+</div>

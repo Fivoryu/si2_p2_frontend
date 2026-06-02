@@ -1,0 +1,99 @@
+<div class="page-container">
+  <header class="page-header">
+    <h1>Registrar técnico</h1>
+    <p class="page-header__subtitle">
+      Asocie un técnico a un taller de su red para asignarle servicios de auxilio en ruta.
+    </p>
+  </header>
+
+  @if (loadingTalleres()) {
+    <div class="loading-wrap">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (tallerOptions().length === 0) {
+    <div class="empty-state">
+      <mat-icon>store</mat-icon>
+      <p class="empty-state__title">Sin talleres disponibles</p>
+      <p class="empty-state__text">
+        Debe registrar al menos un taller antes de añadir técnicos.
+      </p>
+    </div>
+  } @else if (createdId()) {
+    <div class="page-card success-card">
+      <div class="page-card__body">
+        <div class="success-card__icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <h2>Técnico registrado</h2>
+        <p>El técnico quedó asociado al taller seleccionado y puede ser asignado a emergencias.</p>
+        <p class="success-card__hint">ID: {{ createdId() }}</p>
+        <ui-button variant="outline" (clicked)="registerAnother()">Registrar otro técnico</ui-button>
+      </div>
+    </div>
+  } @else {
+    <div class="page-card">
+      <div class="page-card__header">Datos del técnico</div>
+      <div class="page-card__body">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="technician-form">
+          @if (!isTallerRole()) {
+            <ui-form-field label="Taller" [required]="true">
+              <ui-select
+                formControlName="taller_id"
+                placeholder="Seleccione un taller"
+                [options]="tallerOptions()"
+                [invalid]="invalid('taller_id')"
+              />
+            </ui-form-field>
+          }
+
+          <ui-form-field label="Nombre completo" [required]="true">
+            <ui-input
+              formControlName="nombre"
+              placeholder="Juan Técnico"
+              [invalid]="invalid('nombre')"
+            />
+          </ui-form-field>
+
+          <ui-form-field label="Teléfono" hint="Opcional">
+            <ui-input formControlName="telefono" type="tel" placeholder="70000000" />
+          </ui-form-field>
+
+          <ui-form-field
+            label="Especialidades"
+            hint="Seleccione del catálogo del taller (opcional)"
+          >
+            @if (loadingEspecialidades()) {
+              <p class="specialty-hint">Cargando especialidades…</p>
+            } @else if (!form.controls.taller_id.value) {
+              <p class="specialty-hint">Seleccione un taller primero.</p>
+            } @else if (specialtyOptions().length === 0) {
+              <p class="specialty-hint">
+                Este taller no tiene especialidades definidas.
+                <a routerLink="/talleres/especialidades">Agregar especialidades</a>
+              </p>
+            } @else {
+              <div class="specialty-list">
+                @for (esp of specialtyOptions(); track esp.id) {
+                  <label class="specialty-item">
+                    <input
+                      type="checkbox"
+                      [checked]="isSpecialtySelected(esp.id)"
+                      (change)="toggleSpecialty(esp.id, $any($event.target).checked)"
+                    />
+                    <span>{{ esp.nombre }}</span>
+                  </label>
+                }
+              </div>
+            }
+          </ui-form-field>
+
+          <div class="form-actions">
+            <ui-button type="submit" variant="primary" [loading]="loading()">
+              Registrar técnico
+            </ui-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

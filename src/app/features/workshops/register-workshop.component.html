@@ -1,0 +1,95 @@
+<div class="page-container">
+  <header class="page-header">
+    <h1>Registrar taller</h1>
+    <p class="page-header__subtitle">
+      Cree un nuevo taller mecánico en su red. Se generarán credenciales de acceso para el usuario
+      del taller.
+    </p>
+  </header>
+
+  @if (created()) {
+    <div class="page-card success-card">
+      <div class="page-card__body">
+        <div class="success-card__icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <h2>Taller registrado</h2>
+        <p>
+          El taller quedó asociado a su tenant. El usuario puede iniciar sesión con el correo
+          <strong>{{ created()!.email }}</strong> y la contraseña temporal
+          <strong>password123</strong>.
+        </p>
+        <p class="success-card__hint">
+          ID del taller: {{ created()!.id }}. Configure tipos de servicio y disponibilidad desde el
+          panel del taller.
+        </p>
+        <ui-button variant="outline" (clicked)="registerAnother()">Registrar otro taller</ui-button>
+      </div>
+    </div>
+  } @else {
+    <div class="page-card">
+      <div class="page-card__header">Datos del taller</div>
+      <div class="page-card__body">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="workshop-form">
+          <div class="form-grid">
+            <ui-form-field label="Nombre del taller" [required]="true">
+              <ui-input
+                formControlName="nombre"
+                placeholder="Taller Norte Express"
+                [invalid]="invalid('nombre')"
+              />
+            </ui-form-field>
+
+            <ui-form-field label="Correo de acceso" [required]="true">
+              <ui-input
+                formControlName="email"
+                type="email"
+                placeholder="taller@red.com"
+                [invalid]="invalid('email')"
+              />
+            </ui-form-field>
+
+            <ui-form-field label="Dirección" [required]="true" class="form-grid__full">
+              <ui-input
+                formControlName="direccion"
+                placeholder="Av. Busch, La Paz"
+                [invalid]="invalid('direccion')"
+              />
+            </ui-form-field>
+
+            <ui-form-field label="Teléfono" hint="Opcional">
+              <ui-input formControlName="telefono" type="tel" placeholder="70000000" />
+            </ui-form-field>
+
+            <ui-form-field
+              label="Capacidad máxima"
+              [required]="true"
+              helper="Servicios simultáneos"
+            >
+              <ui-input
+                formControlName="capacidad_max"
+                type="number"
+                placeholder="3"
+                [invalid]="invalid('capacidad_max')"
+              />
+            </ui-form-field>
+
+            <ui-form-field label="Latitud" hint="Opcional">
+              <ui-input formControlName="latitud" type="number" placeholder="-16.5000" />
+            </ui-form-field>
+
+            <ui-form-field label="Longitud" hint="Opcional">
+              <ui-input formControlName="longitud" type="number" placeholder="-68.1500" />
+            </ui-form-field>
+          </div>
+
+          <div class="form-actions">
+            <ui-button type="submit" variant="primary" [loading]="loading()">
+              Registrar taller
+            </ui-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

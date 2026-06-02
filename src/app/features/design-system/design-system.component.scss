@@ -1,0 +1,86 @@
+.ds-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--ui-space-2xl) var(--ui-space-xl);
+  font-family: var(--ui-font-family);
+}
+
+.ds-hero {
+  margin-bottom: var(--ui-space-2xl);
+
+  h1 {
+    margin: 0 0 var(--ui-space-sm);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ui-color-text);
+  }
+
+  &__eyebrow {
+    margin: 0 0 var(--ui-space-sm);
+    font-size: var(--ui-font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ui-color-primary);
+  }
+
+  &__lead {
+    margin: 0;
+    color: var(--ui-color-text-muted);
+    max-width: 52ch;
+    line-height: 1.6;
+  }
+}
+
+.ds-section {
+  margin-bottom: var(--ui-space-2xl);
+
+  h2 {
+    margin: 0 0 var(--ui-space-lg);
+    font-size: var(--ui-font-size-xl);
+    color: var(--ui-color-text);
+  }
+
+  &__desc {
+    margin: calc(var(--ui-space-sm) * -1) 0 var(--ui-space-lg);
+    color: var(--ui-color-text-muted);
+    font-size: var(--ui-font-size-sm);
+  }
+}
+
+.ds-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-md);
+  margin-bottom: var(--ui-space-md);
+}
+
+.ds-form-card {
+  background: var(--ui-color-surface);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-md);
+  padding: var(--ui-space-xl);
+  border: 1px solid var(--ui-color-border);
+}
+
+.ds-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-md);
+  align-items: center;
+  margin-top: var(--ui-space-xl);
+
+  ui-button[type='submit'] {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+.ds-success {
+  margin-top: var(--ui-space-lg);
+  padding: var(--ui-space-md);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-color-success-soft);
+  color: var(--ui-color-success);
+  font-size: var(--ui-font-size-sm);
+}

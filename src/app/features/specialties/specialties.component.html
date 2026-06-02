@@ -1,0 +1,76 @@
+<div class="page-container">
+  <header class="page-header">
+    <h1>Especialidades del taller</h1>
+    <p class="page-header__subtitle">
+      Catálogo estándar asignado automáticamente a cada taller. Al registrar técnicos,
+      asígneles especialidades desde esta lista. Puede desactivar las que el taller no ofrezca.
+    </p>
+  </header>
+
+  @if (!isTallerRole() && tallerOptions().length > 1) {
+    <div class="page-card selector-card">
+      <div class="page-card__body">
+        <form [formGroup]="tallerForm">
+          <ui-form-field label="Taller" [required]="true">
+            <ui-select
+              formControlName="taller_id"
+              [options]="tallerOptions()"
+              placeholder="Seleccione un taller"
+            />
+          </ui-form-field>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (!selectedTallerId()) {
+    <div class="empty-state">
+      <mat-icon>build</mat-icon>
+      <p class="empty-state__title">Seleccione un taller</p>
+      <p class="empty-state__text">Elija un taller para ver sus especialidades.</p>
+    </div>
+  } @else if (loading()) {
+    <div class="loading-wrap">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (rows().length === 0) {
+    <div class="empty-state">
+      <mat-icon>category</mat-icon>
+      <p class="empty-state__title">Sin especialidades</p>
+      <p class="empty-state__text">
+        El catálogo se generará al abrir esta vista o al crear el taller.
+      </p>
+    </div>
+  } @else {
+    <div class="page-card">
+      <table mat-table [dataSource]="rows()" class="specialties-table">
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+        </ng-container>
+        <ng-container matColumnDef="activo">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let row">
+            <span [class.badge--active]="row.activo !== false" [class.badge--inactive]="row.activo === false">
+              {{ row.activo !== false ? 'Activa' : 'Inactiva' }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              mat-icon-button
+              (click)="toggleActivo(row)"
+              [title]="row.activo !== false ? 'Desactivar' : 'Activar'"
+            >
+              <mat-icon>{{ row.activo !== false ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  }
+</div>
