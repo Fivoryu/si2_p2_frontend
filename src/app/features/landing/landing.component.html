@@ -1,0 +1,225 @@
+<div class="landing">
+  <app-marketing-header />
+
+  <section id="inicio" class="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__inner">
+      <div class="hero__content">
+        <p class="hero__badge">
+          <span class="material-icons" aria-hidden="true">verified</span>
+          SaaS · Auxilio vehicular · Bolivia
+        </p>
+        <h1>La plataforma que conecta conductores con talleres de emergencia</h1>
+        <p class="hero__lead">
+          Reporte averías, asigne auxilios con IA, cobre en <strong>bolivianos (Bs.)</strong> y supervise
+          toda su red desde un solo panel. Ideal para grúas, talleres y flotas.
+        </p>
+        <div class="hero__cta">
+          @if (isLoggedIn()) {
+            <ui-button variant="primary" size="lg" (clicked)="goPanel()">Ir a mi panel</ui-button>
+          } @else {
+            <ui-button variant="primary" size="lg" (clicked)="signupConductor()">
+              Crear cuenta gratis
+            </ui-button>
+            <ui-button variant="outline" size="lg" [onDark]="true" (clicked)="goLogin()">
+              Iniciar sesión
+            </ui-button>
+          }
+        </div>
+        <ul class="hero__stats">
+          <li>
+            <span class="hero__stat-icon material-icons" aria-hidden="true">schedule</span>
+            <div>
+              <strong>24/7</strong>
+              <span>Atención de emergencias</span>
+            </div>
+          </li>
+          <li>
+            <span class="hero__stat-icon material-icons" aria-hidden="true">payments</span>
+            <div>
+              <strong>BOB</strong>
+              <span>Precios en bolivianos</span>
+            </div>
+          </li>
+          <li>
+            <span class="hero__stat-icon material-icons" aria-hidden="true">psychology</span>
+            <div>
+              <strong>IA</strong>
+              <span>Clasificación y asignación</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="hero__visual" aria-hidden="true">
+        <div class="hero-mock">
+          <div class="hero-mock__bar">
+            <span></span><span></span><span></span>
+            <em>Panel en vivo</em>
+          </div>
+          <div class="hero-mock__body">
+            <div class="hero-card hero-card--1">
+              <span class="hero-card__tag hero-card__tag--blue">En camino</span>
+              <p class="hero-card__title">Grúa asignada</p>
+              <p class="hero-card__meta">Llegada estimada · <strong>8 min</strong></p>
+            </div>
+            <div class="hero-card hero-card--2">
+              <span class="hero-card__tag hero-card__tag--ok">Pagado</span>
+              <p class="hero-card__title">Bs. 350,00</p>
+              <p class="hero-card__meta">Factura emitida</p>
+            </div>
+            <div class="hero-card hero-card--3">
+              <span class="material-icons hero-card__pulse">notifications_active</span>
+              <p class="hero-card__title">Nuevo incidente</p>
+              <p class="hero-card__meta">Prioridad alta · Santa Cruz</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+        <path fill="#f8fafc" d="M0,48 C360,96 720,0 1080,48 C1260,72 1380,64 1440,56 L1440,80 L0,80 Z" />
+      </svg>
+    </div>
+  </section>
+
+  <section id="funciones" class="section section--light">
+    <div class="section__inner">
+      <p class="section__eyebrow">Funcionalidades</p>
+      <h2>Todo lo que necesita su operación</h2>
+      <p class="section__subtitle">
+        Desde el reporte en carretera hasta el cierre con comisión de plataforma.
+      </p>
+      <div class="features-grid">
+        @for (f of features; track f.title) {
+          <article class="feature-card">
+            <div class="feature-card__icon">
+              <span class="material-icons" aria-hidden="true">{{ f.icon }}</span>
+            </div>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.text }}</p>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--steps">
+    <div class="section__inner">
+      <p class="section__eyebrow section__eyebrow--dark">Proceso</p>
+      <h2 class="section__title--dark">Cómo funciona</h2>
+      <ol class="steps-list">
+        @for (s of steps; track s.n) {
+          <li>
+            <span class="steps-list__n">{{ s.n }}</span>
+            <div>
+              <h3>{{ s.title }}</h3>
+              <p>{{ s.text }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section id="precios" class="section section--dark">
+    <div class="section__inner">
+      <p class="section__eyebrow">Planes SaaS</p>
+      <h2>Precios en bolivianos (Bs.)</h2>
+      <p class="section__subtitle">
+        Suscripción mensual para redes de talleres. Sin costos ocultos; comisión por servicio según contrato.
+      </p>
+      @if (plansLoading()) {
+        <div class="pricing-skeleton">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="pricing-skeleton__card"></div>
+          }
+        </div>
+      } @else if (plans().length === 0) {
+        <p class="pricing-empty">No se pudieron cargar los planes. Intente más tarde.</p>
+      } @else {
+        <div class="pricing-grid">
+          @for (plan of plans(); track plan.id) {
+            <article
+              class="pricing-card"
+              [class.pricing-card--featured]="plan.nombre === 'profesional'"
+            >
+              @if (plan.nombre === 'profesional') {
+                <span class="pricing-card__ribbon">Más popular</span>
+              }
+              <h3>{{ planLabel(plan.nombre) }}</h3>
+              <p class="pricing-card__price">
+                <span class="pricing-card__amount">{{ formatBob(plan.precio_mensual) }}</span>
+                @if (plan.precio_mensual > 0) {
+                  <span class="pricing-card__period">/ mes</span>
+                }
+              </p>
+              <ul class="pricing-card__features">
+                <li>
+                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  Hasta {{ plan.max_talleres }} talleres
+                </li>
+                <li>
+                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  Hasta {{ plan.max_tecnicos }} técnicos
+                </li>
+                <li>
+                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  IA avanzada: {{ plan.ia_avanzada ? 'Incluida' : 'Básica' }}
+                </li>
+                <li>
+                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  Facturación en {{ plan.moneda }}
+                </li>
+              </ul>
+              <ui-button
+                [variant]="plan.nombre === 'profesional' ? 'primary' : 'outline'"
+                [onDark]="plan.nombre !== 'profesional'"
+                [block]="true"
+                (clicked)="signupPlan(plan.id)"
+              >
+                Contratar plan
+              </ui-button>
+            </article>
+          }
+        </div>
+      }
+      <p class="pricing-note">
+        ¿Es conductor?
+        <button type="button" class="link-btn" (click)="signupConductor()">Regístrese sin costo</button>
+        para reportar emergencias desde la app móvil.
+      </p>
+    </div>
+  </section>
+
+  <section id="contacto" class="section section--cta">
+    <div class="section__inner">
+      <div class="cta__box">
+        <p class="section__eyebrow section__eyebrow--cta">Empiece hoy</p>
+        <h2>Active su red de auxilio en Bolivia</h2>
+        <p>Santa Cruz, La Paz, Cochabamba y todo el país. Configuración en minutos.</p>
+        <div class="cta__actions">
+          <ui-button variant="primary" size="lg" (clicked)="signupConductor()">Crear mi cuenta</ui-button>
+          <ui-button variant="outline" size="lg" [onDark]="true" (clicked)="goLogin()">Ya tengo cuenta</ui-button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="landing-footer__inner">
+      <div class="landing-footer__brand">
+        <span class="material-icons">car_repair</span>
+        <span>Emergencias<span>BO</span></span>
+      </div>
+      <p class="landing-footer__copy">© 2026 Emergencias Vehiculares · Plataforma SaaS multi-tenant</p>
+      <nav aria-label="Pie de página">
+        <a routerLink="/login">Acceso talleres</a>
+        <a routerLink="/registro">Registro</a>
+        <a routerLink="/design-system">UI Kit</a>
+      </nav>
+    </div>
+  </footer>
+</div>
