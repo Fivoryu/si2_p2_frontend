@@ -74,7 +74,7 @@ export class TenantsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTenants();
-    this.api.get<{ items: PlanOption[] }>('/planes').subscribe({
+    this.api.get<{ items: PlanOption[] }>('/tenants/planes').subscribe({
       next: (r) => (this.plans = r.items ?? []),
       error: () => {},
     });
