@@ -7,3 +7,13 @@
     border-top: 1px solid rgba(15, 23, 42, 0.06);
   }
 }
+
+.full-width {
+  width: 100%;
+}
+
+.field-hint {
+  margin: 0 0 var(--ui-space-md);
+  font-size: var(--ui-font-size-sm);
+  color: var(--ui-color-text-muted);
+}

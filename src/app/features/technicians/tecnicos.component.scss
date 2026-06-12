@@ -1,0 +1,45 @@
+.crud-panel {
+  overflow: hidden;
+}
+
+.tab-form {
+  max-width: 480px;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-sm);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--ui-space-sm);
+  margin-top: var(--ui-space-md);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+
+  &--ok {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &--off {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.empty-state--inline {
+  border: none;
+  box-shadow: none;
+  margin: var(--ui-space-xl);
+}

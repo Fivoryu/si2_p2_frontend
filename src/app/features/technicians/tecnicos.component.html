@@ -1,0 +1,168 @@
+<div class="page-container">
+  <header class="page-header">
+    <h1>Técnicos</h1>
+    <p class="page-header__subtitle">
+      Gestione el personal técnico de cada taller: nombre, contacto, taller asignado y especialidades.
+    </p>
+  </header>
+
+  <div class="page-card crud-panel">
+    <mat-tab-group animationDuration="200ms">
+      <mat-tab label="Listado">
+        @if (loading) {
+          <div class="loading-wrap">
+            <mat-spinner diameter="40" />
+          </div>
+        } @else if (tecnicos.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>engineering</mat-icon>
+            <p class="empty-state__title">Sin técnicos registrados</p>
+            <p class="empty-state__text">Use la pestaña «Registrar técnico» para agregar personal.</p>
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="tecnicos" class="data-table">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="usuario_email">
+                <th mat-header-cell *matHeaderCellDef>Correo</th>
+                <td mat-cell *matCellDef="let row">{{ row.usuario_email || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="telefono">
+                <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+                <td mat-cell *matCellDef="let row">{{ row.telefono || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="taller_nombre">
+                <th mat-header-cell *matHeaderCellDef>Taller</th>
+                <td mat-cell *matCellDef="let row">{{ row.taller_nombre || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="especialidad">
+                <th mat-header-cell *matHeaderCellDef>Especialidades</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.especialidades?.join(', ') || row.especialidad || '—' }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="disponible">
+                <th mat-header-cell *matHeaderCellDef>Disponible</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="badge" [class.badge--ok]="row.disponible" [class.badge--off]="!row.disponible">
+                    {{ row.disponible ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button type="button" (click)="startEdit(row)" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" color="warn" (click)="remove(row)" title="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-tab>
+
+      <mat-tab label="Registrar técnico">
+        <div class="page-card__body tab-form">
+          <form [formGroup]="createForm" (ngSubmit)="createTecnico()" class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Taller</mat-label>
+              <mat-select formControlName="taller_id" (selectionChange)="onTallerChange($event.value)">
+                @for (t of talleres; track t.id) {
+                  <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Correo de acceso</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña</mat-label>
+              <input matInput type="password" formControlName="password" />
+              <mat-hint>Opcional: mínimo 8 caracteres. Si la deja vacía, se genera una temporal.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Especialidades</mat-label>
+              <mat-select formControlName="especialidad_ids" multiple>
+                @for (e of especialidades; track e.id) {
+                  <mat-option [value]="e.id">{{ e.nombre }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="createForm.invalid || saving">
+              Registrar técnico
+            </button>
+          </form>
+        </div>
+      </mat-tab>
+
+      @if (editingId) {
+        <mat-tab label="Editar técnico">
+          <div class="page-card__body tab-form">
+            <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="form-grid">
+              @if (isAdminTenant) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Taller</mat-label>
+                  <mat-select formControlName="taller_id" (selectionChange)="onTallerChange($event.value, true)">
+                    @for (t of talleres; track t.id) {
+                      <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="nombre" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Correo de acceso</mat-label>
+                <input matInput type="email" formControlName="email" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Nueva contraseña</mat-label>
+                <input matInput type="password" formControlName="password" />
+                <mat-hint>Dejar vacío para no cambiar la contraseña actual.</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="telefono" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Especialidades</mat-label>
+                <mat-select formControlName="especialidad_ids" multiple>
+                  @for (e of especialidades; track e.id) {
+                    <mat-option [value]="e.id">{{ e.nombre }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-checkbox formControlName="disponible">Disponible</mat-checkbox>
+              <div class="form-actions">
+                <button mat-button type="button" (click)="cancelEdit()">Cancelar</button>
+                <button mat-flat-button color="primary" type="submit" [disabled]="editForm.invalid || saving">
+                  Guardar cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+      }
+    </mat-tab-group>
+  </div>
+</div>

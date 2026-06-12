@@ -1,42 +1,25 @@
 import { Routes } from '@angular/router';
 import { authGuard, loginGuard } from './core/auth.guard';
 import { LoginComponent } from './features/auth/login.component';
-import { ForgotPasswordComponent } from './features/auth/forgot-password.component';
-import { ResetPasswordComponent } from './features/auth/reset-password.component';
 import { ChangePasswordComponent } from './features/auth/change-password.component';
 import { SignupSuccessComponent } from './features/auth/signup-success.component';
 import { RequestsComponent } from './features/requests/requests.component';
 import { KpisComponent } from './features/kpis/kpis.component';
+import { ReportesComponent } from './features/reportes/reportes.component';
 import { SlaComponent } from './features/sla/sla.component';
 import { TenantsComponent } from './features/admin/tenants.component';
 import { RolesComponent } from './features/roles/roles.component';
 import { AvailabilityComponent } from './features/availability/availability.component';
-import { RegisterWorkshopComponent } from './features/workshops/register-workshop.component';
-import { RegisterTechnicianComponent } from './features/technicians/register-technician.component';
-import { SpecialtiesComponent } from './features/specialties/specialties.component';
-import { DesignSystemComponent } from './features/design-system/design-system.component';
-import { LandingComponent } from './features/landing/landing.component';
+import { TalleresComponent } from './features/workshops/talleres.component';
+import { TecnicosComponent } from './features/technicians/tecnicos.component';
 import { RegisterComponent } from './features/auth/register.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
-  {
-    path: 'recuperar-contrasena',
-    component: ForgotPasswordComponent,
-    canActivate: [loginGuard],
-    data: { title: 'Recuperar contraseña' },
-  },
-  {
-    path: 'restablecer-contrasena',
-    component: ResetPasswordComponent,
-    canActivate: [loginGuard],
-    data: { title: 'Restablecer contraseña' },
-  },
   { path: 'registro', component: RegisterComponent, canActivate: [loginGuard] },
   { path: 'registro/exito', component: SignupSuccessComponent },
   { path: 'cambiar-contrasena', component: ChangePasswordComponent },
-  { path: 'design-system', component: DesignSystemComponent },
   {
     path: 'requests',
     component: RequestsComponent,
@@ -50,28 +33,38 @@ export const routes: Routes = [
     data: { title: 'Disponibilidad del taller' },
   },
   {
-    path: 'talleres/registrar',
-    component: RegisterWorkshopComponent,
+    path: 'talleres',
+    component: TalleresComponent,
     canActivate: [authGuard(['ADMIN_TENANT'])],
-    data: { title: 'Registrar taller' },
+    data: { title: 'Talleres' },
+  },
+  {
+    path: 'talleres/registrar',
+    redirectTo: 'talleres',
+    pathMatch: 'full',
+  },
+  {
+    path: 'tecnicos',
+    component: TecnicosComponent,
+    canActivate: [authGuard(['ADMIN_TENANT', 'TALLER'])],
+    data: { title: 'Técnicos' },
   },
   {
     path: 'tecnicos/registrar',
-    component: RegisterTechnicianComponent,
-    canActivate: [authGuard(['ADMIN_TENANT', 'TALLER'])],
-    data: { title: 'Registrar técnico' },
-  },
-  {
-    path: 'talleres/especialidades',
-    component: SpecialtiesComponent,
-    canActivate: [authGuard(['ADMIN_TENANT', 'TALLER'])],
-    data: { title: 'Especialidades del taller' },
+    redirectTo: 'tecnicos',
+    pathMatch: 'full',
   },
   {
     path: 'kpis',
     component: KpisComponent,
     canActivate: [authGuard(['ADMIN_TENANT', 'ADMIN_PLATAFORMA'])],
     data: { title: 'Dashboard KPIs' },
+  },
+  {
+    path: 'reportes',
+    component: ReportesComponent,
+    canActivate: [authGuard(['ADMIN_TENANT', 'ADMIN_PLATAFORMA'])],
+    data: { title: 'Reportes Inteligentes' },
   },
   {
     path: 'sla',
@@ -91,5 +84,5 @@ export const routes: Routes = [
     canActivate: [authGuard(['ADMIN_TENANT', 'ADMIN_PLATAFORMA'])],
     data: { title: 'Roles y Permisos' },
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'login' },
 ];

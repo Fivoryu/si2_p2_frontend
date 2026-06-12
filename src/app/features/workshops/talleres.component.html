@@ -1,0 +1,165 @@
+<div class="page-container">
+  <header class="page-header">
+    <h1>Talleres</h1>
+    <p class="page-header__subtitle">
+      Consulte, registre y administre los talleres de su red con sus datos de contacto y capacidad.
+    </p>
+  </header>
+
+  <div class="page-card crud-panel">
+    <mat-tab-group animationDuration="200ms">
+      <mat-tab label="Listado">
+        @if (loading) {
+          <div class="loading-wrap">
+            <mat-spinner diameter="40" />
+          </div>
+        } @else if (talleres.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>store</mat-icon>
+            <p class="empty-state__title">Sin talleres registrados</p>
+            <p class="empty-state__text">Use la pestaña «Registrar taller» para agregar el primero.</p>
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table mat-table [dataSource]="talleres" class="data-table">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="direccion">
+                <th mat-header-cell *matHeaderCellDef>Dirección</th>
+                <td mat-cell *matCellDef="let row">{{ row.direccion || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="telefono">
+                <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+                <td mat-cell *matCellDef="let row">{{ row.telefono || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="disponible">
+                <th mat-header-cell *matHeaderCellDef>Disponible</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="badge" [class.badge--ok]="row.disponible" [class.badge--off]="!row.disponible">
+                    {{ row.disponible ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="capacidad_max">
+                <th mat-header-cell *matHeaderCellDef>Capacidad</th>
+                <td mat-cell *matCellDef="let row">{{ row.capacidad_max ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="calificacion">
+                <th mat-header-cell *matHeaderCellDef>Calificación</th>
+                <td mat-cell *matCellDef="let row">{{ row.calificacion ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="activo">
+                <th mat-header-cell *matHeaderCellDef>Activo</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="badge" [class.badge--ok]="row.activo !== false" [class.badge--off]="row.activo === false">
+                    {{ row.activo !== false ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="usuario_email">
+                <th mat-header-cell *matHeaderCellDef>Email acceso</th>
+                <td mat-cell *matCellDef="let row">{{ row.usuario_email || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button type="button" (click)="startEdit(row)" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (row.activo !== false) {
+                    <button mat-icon-button type="button" color="warn" (click)="deactivate(row)" title="Desactivar">
+                      <mat-icon>block</mat-icon>
+                    </button>
+                  }
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        }
+      </mat-tab>
+
+      <mat-tab label="Registrar taller">
+        <div class="page-card__body tab-form">
+          <form [formGroup]="createForm" (ngSubmit)="createTaller()" class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del taller</mat-label>
+              <input matInput formControlName="nombre" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Email de acceso</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="direccion" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Latitud</mat-label>
+              <input matInput formControlName="latitud" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Longitud</mat-label>
+              <input matInput formControlName="longitud" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Capacidad máxima</mat-label>
+              <input matInput type="number" formControlName="capacidad_max" />
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="createForm.invalid || saving">
+              Registrar taller
+            </button>
+          </form>
+        </div>
+      </mat-tab>
+
+      @if (editingId) {
+        <mat-tab label="Editar taller">
+          <div class="page-card__body tab-form">
+            <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="nombre" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Dirección</mat-label>
+                <input matInput formControlName="direccion" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="telefono" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Latitud</mat-label>
+                <input matInput formControlName="latitud" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Longitud</mat-label>
+                <input matInput formControlName="longitud" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Capacidad máxima</mat-label>
+                <input matInput type="number" formControlName="capacidad_max" />
+              </mat-form-field>
+              <mat-checkbox formControlName="disponible">Disponible para asignaciones</mat-checkbox>
+              <mat-checkbox formControlName="activo">Activo</mat-checkbox>
+              <div class="form-actions">
+                <button mat-button type="button" (click)="cancelEdit()">Cancelar</button>
+                <button mat-flat-button color="primary" type="submit" [disabled]="editForm.invalid || saving">
+                  Guardar cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+      }
+    </mat-tab-group>
+  </div>
+</div>

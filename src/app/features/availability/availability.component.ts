@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/api.service';
-import { UiButton, UiCheckbox, UiFormField, UiInput } from '../../shared/ui';
 
 interface TallerInfo {
   id: string;
@@ -22,10 +25,10 @@ interface TallerInfo {
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    UiButton,
-    UiCheckbox,
-    UiFormField,
-    UiInput,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
   ],
   templateUrl: './availability.component.html',
   styleUrl: './availability.component.scss',
@@ -45,9 +48,8 @@ export class AvailabilityComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.api.get<{ items: TallerInfo[] }>('/talleres').subscribe({
-      next: (r) => {
-        const t = r.items?.[0];
+    this.api.get<TallerInfo>('/talleres/yo').subscribe({
+      next: (t) => {
         this.taller.set(t);
         if (t) {
           this.form.patchValue({

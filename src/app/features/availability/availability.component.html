@@ -24,23 +24,21 @@
       <div class="page-card__header">{{ taller()!.nombre || 'Mi taller' }}</div>
       <div class="page-card__body">
         <form [formGroup]="form" (ngSubmit)="save()" class="availability-form">
-          <ui-form-field helper="Solo los talleres disponibles reciben nuevas asignaciones">
-            <ui-checkbox formControlName="disponible">
-              Disponible para asignaciones
-            </ui-checkbox>
-          </ui-form-field>
+          <mat-checkbox formControlName="disponible">
+            Disponible para asignaciones
+          </mat-checkbox>
+          <p class="field-hint">Solo los talleres disponibles reciben nuevas asignaciones.</p>
 
-          <ui-form-field
-            label="Capacidad máxima"
-            helper="Servicios simultáneos que puede atender"
-          >
-            <ui-input formControlName="capacidad_max" type="number" placeholder="5" />
-          </ui-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Capacidad máxima</mat-label>
+            <input matInput formControlName="capacidad_max" type="number" placeholder="5" />
+            <mat-hint>Servicios simultáneos que puede atender</mat-hint>
+          </mat-form-field>
 
           <div class="availability-form__actions">
-            <ui-button type="submit" variant="primary" [loading]="saving()">
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
               Guardar cambios
-            </ui-button>
+            </button>
           </div>
         </form>
       </div>

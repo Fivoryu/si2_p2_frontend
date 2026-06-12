@@ -1,0 +1,134 @@
+.query-card {
+  margin-bottom: var(--ui-space-xl);
+}
+
+.query-row {
+  display: flex;
+  gap: var(--ui-space-md);
+  align-items: flex-start;
+}
+
+.query-field {
+  flex: 1;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-sm);
+  margin-top: var(--ui-space-sm);
+}
+
+.suggestion-chip {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 16px;
+}
+
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-md);
+  padding: var(--ui-space-xl);
+  justify-content: center;
+  color: var(--ui-color-text-muted, #666);
+}
+
+// Widget grid
+.widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--ui-space-lg);
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.widget {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &--map {
+    grid-column: 1 / -1;
+  }
+}
+
+.widget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--ui-space-md) var(--ui-space-lg);
+  border-bottom: 1px solid var(--ui-color-border, #e0e0e0);
+}
+
+.widget__title {
+  font-weight: 600;
+  font-size: var(--ui-font-size-sm);
+  color: var(--ui-color-text);
+}
+
+.widget__summary {
+  padding: var(--ui-space-md) var(--ui-space-lg);
+  font-size: 0.9rem;
+  color: var(--ui-color-text-muted, #555);
+  background: var(--ui-color-bg-secondary, #f9f9f9);
+  border-bottom: 1px solid var(--ui-color-border, #e0e0e0);
+}
+
+.echarts-widget {
+  height: 280px;
+  padding: var(--ui-space-sm);
+}
+
+.kpi-big {
+  text-align: center;
+  padding: var(--ui-space-xl);
+
+  &__value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--ui-color-primary-hover);
+  }
+
+  &__label {
+    font-size: 0.9rem;
+    color: var(--ui-color-text-muted, #666);
+    margin-top: var(--ui-space-xs);
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  padding: 0 var(--ui-space-sm) var(--ui-space-sm);
+}
+
+.kpi-table {
+  width: 100%;
+  min-width: 300px;
+  font-size: 0.85rem;
+}
+
+.map-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-sm);
+  min-height: 250px;
+  color: var(--ui-color-text-muted, #999);
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--ui-space-xl);
+  color: var(--ui-color-text-muted, #999);
+}

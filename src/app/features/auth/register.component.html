@@ -95,20 +95,48 @@
           <ui-form-field label="Teléfono">
             <ui-input formControlName="admin_telefono" type="tel" />
           </ui-form-field>
-          <ui-form-field label="Contraseña" [required]="true">
-            <ui-input
-              formControlName="password"
-              type="password"
-              [invalid]="invalidTaller('password')"
-            />
-          </ui-form-field>
-          <ui-form-field label="Confirmar contraseña" [required]="true">
-            <ui-input formControlName="password2" type="password" />
-          </ui-form-field>
+          @if (!checkoutUrl()) {
+            <ui-form-field label="Contraseña" [required]="true">
+              <ui-input
+                formControlName="password"
+                type="password"
+                [invalid]="invalidTaller('password')"
+              />
+            </ui-form-field>
+            <ui-form-field label="Confirmar contraseña" [required]="true">
+              <ui-input formControlName="password2" type="password" />
+            </ui-form-field>
+          }
           <ui-button type="submit" variant="primary" [block]="true" [loading]="loading()">
-            Contratar y crear red
+            @if (checkoutUrl()) {
+              Procesando pago…
+            } @else {
+              Contratar y crear red
+            }
           </ui-button>
         </form>
+
+        @if (checkoutUrl()) {
+          <div class="checkout-section">
+            <div class="checkout-divider"></div>
+            <h3>Completa tu pago</h3>
+            <canvas #qrCanvas width="220" height="220"></canvas>
+            <p class="checkout-hint">
+              Escanea el QR o haz clic para pagar
+              <strong>1 BOB</strong>
+            </p>
+            <a [href]="checkoutUrl()" target="_blank" class="checkout-pay-btn">
+              Abrir página de pago
+            </a>
+            <p class="checkout-card-hint">
+              Tarjeta de prueba: <code>4444 4444 4444 4444</code><br />
+              CVV: 123 · Exp: 12/28
+            </p>
+            <p class="checkout-info">
+              Recibirás un correo con tu contraseña temporal al completar el pago.
+            </p>
+          </div>
+        }
       }
 
       <p class="register-footer">

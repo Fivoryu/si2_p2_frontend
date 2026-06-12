@@ -1,8 +1,8 @@
 <div class="page-container">
-  <header class="page-header">
-    <h1>Indicadores de desempeño</h1>
+  <header class="page-header no-print">
+    <h1>Dashboard KPIs</h1>
     <p class="page-header__subtitle">
-      Métricas de asignación, llegada y cumplimiento SLA para su organización.
+      Métricas operacionales, financieras y de calidad para su organización.
     </p>
     <div class="page-header__actions toolbar-actions">
       <button mat-stroked-button (click)="refrescar()">
@@ -11,10 +11,13 @@
       <button mat-stroked-button (click)="exportCsv()">
         <mat-icon>download</mat-icon> Exportar CSV
       </button>
+      <button mat-stroked-button (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon> Imprimir PDF
+      </button>
     </div>
   </header>
 
-  <div class="page-card page-card__body filters-card">
+  <div class="page-card page-card__body filters-card no-print">
     <form [formGroup]="filterForm" class="filters">
       @if (isAdm) {
         <mat-form-field appearance="outline">
@@ -44,78 +47,359 @@
   </div>
 
   @if (loading) {
-    <div class="loading-wrap">
+    <div class="loading-wrap no-print">
       <mat-spinner diameter="40" />
     </div>
   } @else {
-    <div class="kpi-cards">
-      <div class="kpi-card">
-        <div class="kpi-value">{{ resumen?.prom_min_asignacion ?? '—' }}</div>
-        <div class="kpi-label">Prom. min. asignación</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">{{ resumen?.prom_min_llegada ?? '—' }}</div>
-        <div class="kpi-label">Prom. min. llegada</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">{{ resumen?.pct_cancelacion ?? '—' }}%</div>
-        <div class="kpi-label">% cancelación</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">{{ resumen?.total_incidentes ?? '—' }}</div>
-        <div class="kpi-label">Total incidentes</div>
-      </div>
-    </div>
-
-    <div class="chart-box page-card">
-      <h3>Incidentes por tipo</h3>
-      @if (porTipoOpt) {
-        <div echarts [options]="porTipoOpt" class="echarts"></div>
-      } @else {
-        <div class="empty-state empty-state--inline">
-          <mat-icon>pie_chart</mat-icon>
-          <p class="empty-state__text">Sin datos para el rango seleccionado</p>
+    <div class="kpi-print-area">
+      <!-- ========== KPI CARDS ========== -->
+      <div class="kpi-cards">
+        <div class="kpi-card">
+          <div class="kpi-value">{{ resumen?.total_incidentes ?? '—' }}</div>
+          <div class="kpi-label">Total incidentes</div>
         </div>
-      }
-    </div>
-
-    <div class="chart-box page-card">
-      <h3>Cumplimiento SLA por tipo</h3>
-      @if (slaOpt) {
-        <div echarts [options]="slaOpt" class="echarts"></div>
-      } @else {
-        <div class="empty-state empty-state--inline">
-          <mat-icon>schedule</mat-icon>
-          <p class="empty-state__text">Sin datos de SLA para el rango seleccionado</p>
+        <div class="kpi-card">
+          <div class="kpi-value">{{ numFmt(resumen?.prom_min_asignacion) }}</div>
+          <div class="kpi-label">Prom. min. asignación</div>
         </div>
-      }
-    </div>
-
-    <div class="page-card">
-      <div class="page-card__header">Talleres más eficientes</div>
-      @if (talleres.length === 0) {
-        <div class="empty-state empty-state--inline">
-          <mat-icon>engineering</mat-icon>
-          <p class="empty-state__text">No hay datos de talleres en el periodo</p>
+        <div class="kpi-card">
+          <div class="kpi-value">{{ numFmt(resumen?.prom_min_llegada) }}</div>
+          <div class="kpi-label">Prom. min. llegada</div>
         </div>
-      } @else {
-        <table mat-table [dataSource]="talleres" class="kpi-table">
-          <ng-container matColumnDef="taller_nombre">
-            <th mat-header-cell *matHeaderCellDef>Taller</th>
-            <td mat-cell *matCellDef="let row">{{ row.taller_nombre }}</td>
-          </ng-container>
-          <ng-container matColumnDef="total_atendidos">
-            <th mat-header-cell *matHeaderCellDef>Atendidos</th>
-            <td mat-cell *matCellDef="let row">{{ row.total_atendidos }}</td>
-          </ng-container>
-          <ng-container matColumnDef="prom_min_respuesta">
-            <th mat-header-cell *matHeaderCellDef>Prom. respuesta (min)</th>
-            <td mat-cell *matCellDef="let row">{{ row.prom_min_respuesta ?? '—' }}</td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="tallerColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: tallerColumns"></tr>
-        </table>
-      }
+        <div class="kpi-card">
+          <div class="kpi-value">{{ numFmt(resumen?.prom_min_total) }}</div>
+          <div class="kpi-label">Prom. min. atención (total)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">{{ numFmt(resumen?.pct_cancelacion) }}%</div>
+          <div class="kpi-label">% cancelación</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">{{ moneyFmt(ingresosPlataforma) }}</div>
+          <div class="kpi-label">Ingresos plataforma</div>
+        </div>
+      </div>
+
+      <!-- ========== CHARTS (2x2 grid) ========== -->
+      <div class="charts-grid">
+        <div class="chart-box page-card">
+          <h3>Incidentes por tipo</h3>
+          @if (porTipoOpt) {
+            <div echarts [options]="porTipoOpt" class="echarts"></div>
+          } @else {
+            <div class="empty-state empty-state--inline">
+              <mat-icon>pie_chart</mat-icon>
+              <p class="empty-state__text">Sin datos para el rango seleccionado</p>
+            </div>
+          }
+        </div>
+        <div class="chart-box page-card">
+          <h3>Cumplimiento SLA por tipo</h3>
+          @if (slaOpt) {
+            <div echarts [options]="slaOpt" class="echarts"></div>
+          } @else {
+            <div class="empty-state empty-state--inline">
+              <mat-icon>schedule</mat-icon>
+              <p class="empty-state__text">Sin datos de SLA para el rango seleccionado</p>
+            </div>
+          }
+        </div>
+        <div class="chart-box page-card">
+          <h3>Demanda por hora (últimas 72h)</h3>
+          @if (demandaHoraOpt) {
+            <div echarts [options]="demandaHoraOpt" class="echarts"></div>
+          } @else {
+            <div class="empty-state empty-state--inline">
+              <mat-icon>timeline</mat-icon>
+              <p class="empty-state__text">Sin datos de demanda horaria</p>
+            </div>
+          }
+        </div>
+        <div class="chart-box page-card">
+          <h3>Precio promedio por tipo</h3>
+          @if (precioTipoOpt) {
+            <div echarts [options]="precioTipoOpt" class="echarts"></div>
+          } @else {
+            <div class="empty-state empty-state--inline">
+              <mat-icon>bar_chart</mat-icon>
+              <p class="empty-state__text">Sin datos de precios</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ========== TABLES ========== -->
+
+      <!-- Talleres más eficientes -->
+      <div class="page-card">
+        <div class="page-card__header">Talleres más eficientes</div>
+        @if (talleres.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>engineering</mat-icon>
+            <p class="empty-state__text">No hay datos de talleres en el periodo</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="talleres" class="kpi-table">
+              <ng-container matColumnDef="taller_nombre">
+                <th mat-header-cell *matHeaderCellDef>Taller</th>
+                <td mat-cell *matCellDef="let row">{{ row.taller_nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="calificacion">
+                <th mat-header-cell *matHeaderCellDef>Calificación</th>
+                <td mat-cell *matCellDef="let row">{{ row.calificacion ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="servicios_aceptados">
+                <th mat-header-cell *matHeaderCellDef>Aceptados</th>
+                <td mat-cell *matCellDef="let row">{{ row.servicios_aceptados }}</td>
+              </ng-container>
+              <ng-container matColumnDef="servicios_rechazados">
+                <th mat-header-cell *matHeaderCellDef>Rechazados</th>
+                <td mat-cell *matCellDef="let row">{{ row.servicios_rechazados ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="prom_min_respuesta">
+                <th mat-header-cell *matHeaderCellDef>Prom. respuesta (min)</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.prom_min_respuesta) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="prom_min_finalizacion">
+                <th mat-header-cell *matHeaderCellDef>Prom. finalización (min)</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.prom_min_finalizacion) }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="tallerColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: tallerColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Comisiones por taller -->
+      <div class="page-card">
+        <div class="page-card__header">Comisiones por taller</div>
+        @if (comisiones.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>payments</mat-icon>
+            <p class="empty-state__text">No hay pagos completados en el periodo</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="comisiones" class="kpi-table">
+              <ng-container matColumnDef="taller_nombre">
+                <th mat-header-cell *matHeaderCellDef>Taller</th>
+                <td mat-cell *matCellDef="let row">{{ row.taller_nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="total_pagos">
+                <th mat-header-cell *matHeaderCellDef>Pagos</th>
+                <td mat-cell *matCellDef="let row">{{ row.total_pagos }}</td>
+              </ng-container>
+              <ng-container matColumnDef="total_cobrado">
+                <th mat-header-cell *matHeaderCellDef>Total cobrado</th>
+                <td mat-cell *matCellDef="let row">{{ moneyFmt(row.total_cobrado) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="total_comision_plataforma">
+                <th mat-header-cell *matHeaderCellDef>Comisión plataforma</th>
+                <td mat-cell *matCellDef="let row">{{ moneyFmt(row.total_comision_plataforma) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="total_neto_taller">
+                <th mat-header-cell *matHeaderCellDef>Neto taller</th>
+                <td mat-cell *matCellDef="let row">{{ moneyFmt(row.total_neto_taller) }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="comisionColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: comisionColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Ranking de talleres (avanzado) -->
+      <div class="page-card">
+        <div class="page-card__header">Ranking de talleres — tasa de rechazo, aceptación y calidad</div>
+        @if (tallerRanking.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>leaderboard</mat-icon>
+            <p class="empty-state__text">Sin datos de ranking de talleres</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="tallerRanking" class="kpi-table">
+              <ng-container matColumnDef="taller_nombre">
+                <th mat-header-cell *matHeaderCellDef>Taller</th>
+                <td mat-cell *matCellDef="let row">{{ row.taller_nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="rating_taller">
+                <th mat-header-cell *matHeaderCellDef>Rating</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.rating_taller) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="aceptadas">
+                <th mat-header-cell *matHeaderCellDef>Aceptadas</th>
+                <td mat-cell *matCellDef="let row">{{ row.aceptadas }}</td>
+              </ng-container>
+              <ng-container matColumnDef="rechazadas">
+                <th mat-header-cell *matHeaderCellDef>Rechazadas</th>
+                <td mat-cell *matCellDef="let row">{{ row.rechazadas }}</td>
+              </ng-container>
+              <ng-container matColumnDef="tasa_rechazo">
+                <th mat-header-cell *matHeaderCellDef>Tasa rechazo</th>
+                <td mat-cell *matCellDef="let row">{{ pctFmt(row.tasa_rechazo) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="tasa_aceptacion">
+                <th mat-header-cell *matHeaderCellDef>Tasa aceptación</th>
+                <td mat-cell *matCellDef="let row">{{ pctFmt(row.tasa_aceptacion) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="prom_llegada_min">
+                <th mat-header-cell *matHeaderCellDef>Prom. llegada (min)</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.prom_llegada_min) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="servicios_finalizados">
+                <th mat-header-cell *matHeaderCellDef>Finalizados</th>
+                <td mat-cell *matCellDef="let row">{{ row.servicios_finalizados }}</td>
+              </ng-container>
+              <ng-container matColumnDef="rating_servicio">
+                <th mat-header-cell *matHeaderCellDef>Rating servicio</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.rating_servicio) }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="tallerRankingColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: tallerRankingColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Ranking de técnicos (avanzado) -->
+      <div class="page-card">
+        <div class="page-card__header">Ranking de técnicos</div>
+        @if (tecnicoRanking.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>engineering</mat-icon>
+            <p class="empty-state__text">Sin datos de ranking de técnicos</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="tecnicoRanking" class="kpi-table">
+              <ng-container matColumnDef="tecnico_nombre">
+                <th mat-header-cell *matHeaderCellDef>Técnico</th>
+                <td mat-cell *matCellDef="let row">{{ row.tecnico_nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="asignaciones_aceptadas">
+                <th mat-header-cell *matHeaderCellDef>Asig. aceptadas</th>
+                <td mat-cell *matCellDef="let row">{{ row.asignaciones_aceptadas }}</td>
+              </ng-container>
+              <ng-container matColumnDef="servicios_finalizados">
+                <th mat-header-cell *matHeaderCellDef>Serv. finalizados</th>
+                <td mat-cell *matCellDef="let row">{{ row.servicios_finalizados }}</td>
+              </ng-container>
+              <ng-container matColumnDef="prom_llegada_min">
+                <th mat-header-cell *matHeaderCellDef>Prom. llegada (min)</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.prom_llegada_min) }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="tecnicoColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: tecnicoColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Relación precio/calidad (avanzado) -->
+      <div class="page-card">
+        <div class="page-card__header">Relación precio / calidad por taller</div>
+        @if (precioCalidad.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>balance</mat-icon>
+            <p class="empty-state__text">Sin datos de relación precio/calidad</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="precioCalidad" class="kpi-table">
+              <ng-container matColumnDef="taller_nombre">
+                <th mat-header-cell *matHeaderCellDef>Taller</th>
+                <td mat-cell *matCellDef="let row">{{ row.taller_nombre }}</td>
+              </ng-container>
+              <ng-container matColumnDef="precio_promedio">
+                <th mat-header-cell *matHeaderCellDef>Precio prom.</th>
+                <td mat-cell *matCellDef="let row">{{ moneyFmt(row.precio_promedio) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="rating_servicio">
+                <th mat-header-cell *matHeaderCellDef>Rating servicio</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.rating_servicio) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="relacion_precio_calidad">
+                <th mat-header-cell *matHeaderCellDef>Relación precio/calidad</th>
+                <td mat-cell *matCellDef="let row">{{ numFmt(row.relacion_precio_calidad) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="servicios_pagados">
+                <th mat-header-cell *matHeaderCellDef>Servicios pagados</th>
+                <td mat-cell *matCellDef="let row">{{ row.servicios_pagados }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="precioCalidadColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: precioCalidadColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Incidentes por zona -->
+      <div class="page-card">
+        <div class="page-card__header">Incidentes por zona geográfica</div>
+        @if (zonas.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>map</mat-icon>
+            <p class="empty-state__text">Sin datos de zonas</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="zonas" class="kpi-table">
+              <ng-container matColumnDef="zona_lat">
+                <th mat-header-cell *matHeaderCellDef>Latitud</th>
+                <td mat-cell *matCellDef="let row">{{ row.zona_lat }}</td>
+              </ng-container>
+              <ng-container matColumnDef="zona_lng">
+                <th mat-header-cell *matHeaderCellDef>Longitud</th>
+                <td mat-cell *matCellDef="let row">{{ row.zona_lng }}</td>
+              </ng-container>
+              <ng-container matColumnDef="total_incidentes">
+                <th mat-header-cell *matHeaderCellDef>Total incidentes</th>
+                <td mat-cell *matCellDef="let row">{{ row.total_incidentes }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="zonaColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: zonaColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Demanda por zona (avanzado) -->
+      <div class="page-card">
+        <div class="page-card__header">Demanda por zona — evolución diaria (últimos 30 días)</div>
+        @if (demandaZona.length === 0) {
+          <div class="empty-state empty-state--inline">
+            <mat-icon>map</mat-icon>
+            <p class="empty-state__text">Sin datos de demanda por zona</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table mat-table [dataSource]="demandaZona" class="kpi-table">
+              <ng-container matColumnDef="zona_lat">
+                <th mat-header-cell *matHeaderCellDef>Latitud</th>
+                <td mat-cell *matCellDef="let row">{{ row.zona_lat }}</td>
+              </ng-container>
+              <ng-container matColumnDef="zona_lng">
+                <th mat-header-cell *matHeaderCellDef>Longitud</th>
+                <td mat-cell *matCellDef="let row">{{ row.zona_lng }}</td>
+              </ng-container>
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let row">{{ row.fecha }}</td>
+              </ng-container>
+              <ng-container matColumnDef="total_incidentes">
+                <th mat-header-cell *matHeaderCellDef>Total incidentes</th>
+                <td mat-cell *matCellDef="let row">{{ row.total_incidentes }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="demandaZonaColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: demandaZonaColumns"></tr>
+            </table>
+          </div>
+        }
+      </div>
+
     </div>
   }
 </div>
