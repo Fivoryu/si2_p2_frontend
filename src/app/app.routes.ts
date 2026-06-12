@@ -3,10 +3,13 @@ import { authGuard, loginGuard } from './core/auth.guard';
 import { LoginComponent } from './features/auth/login.component';
 import { ForgotPasswordComponent } from './features/auth/forgot-password.component';
 import { ResetPasswordComponent } from './features/auth/reset-password.component';
+import { ChangePasswordComponent } from './features/auth/change-password.component';
+import { SignupSuccessComponent } from './features/auth/signup-success.component';
 import { RequestsComponent } from './features/requests/requests.component';
 import { KpisComponent } from './features/kpis/kpis.component';
 import { SlaComponent } from './features/sla/sla.component';
 import { TenantsComponent } from './features/admin/tenants.component';
+import { RolesComponent } from './features/roles/roles.component';
 import { AvailabilityComponent } from './features/availability/availability.component';
 import { RegisterWorkshopComponent } from './features/workshops/register-workshop.component';
 import { RegisterTechnicianComponent } from './features/technicians/register-technician.component';
@@ -31,6 +34,8 @@ export const routes: Routes = [
     data: { title: 'Restablecer contraseña' },
   },
   { path: 'registro', component: RegisterComponent, canActivate: [loginGuard] },
+  { path: 'registro/exito', component: SignupSuccessComponent },
+  { path: 'cambiar-contrasena', component: ChangePasswordComponent },
   { path: 'design-system', component: DesignSystemComponent },
   {
     path: 'requests',
@@ -79,6 +84,12 @@ export const routes: Routes = [
     component: TenantsComponent,
     canActivate: [authGuard(['ADMIN_PLATAFORMA'])],
     data: { title: 'Administración de tenants' },
+  },
+  {
+    path: 'roles',
+    component: RolesComponent,
+    canActivate: [authGuard(['ADMIN_TENANT', 'ADMIN_PLATAFORMA'])],
+    data: { title: 'Roles y Permisos' },
   },
   { path: '**', redirectTo: '' },
 ];

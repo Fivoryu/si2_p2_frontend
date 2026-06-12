@@ -11,6 +11,7 @@ export interface JwtClaims {
   tenant?: string;
   jti?: string;
   exp?: number;
+  must_change_password?: boolean;
 }
 
 export interface LoginResponse {
@@ -80,6 +81,17 @@ export class AuthService {
 
   get userId(): string | undefined {
     return this.claims?.sub;
+  }
+
+  get mustChangePassword(): boolean {
+    return this.claims?.must_change_password === true;
+  }
+
+  changePassword(oldPassword: string, newPassword: string) {
+    return this.http.post<void>(`${this.base}/auth/change-password`, {
+      password_actual: oldPassword,
+      password_nueva: newPassword,
+    });
   }
 
   get isLoggedIn(): boolean {

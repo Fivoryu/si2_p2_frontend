@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -12,6 +12,7 @@ import {
 } from '../../shared/ui';
 import { AuthService } from '../../core/auth.service';
 import { PublicApiService, type SaasPlan } from '../../core/public-api.service';
+import QRCode from 'qrcode';
 
 type AccountType = 'conductor' | 'taller';
 
@@ -31,7 +32,7 @@ type AccountType = 'conductor' | 'taller';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private publicApi = inject(PublicApiService);
@@ -39,10 +40,13 @@ export class RegisterComponent implements OnInit {
   private router = inject(Router);
   private snack = inject(MatSnackBar);
 
+  @ViewChild('qrCanvas') qrCanvas: any;
+
   accountType = signal<AccountType>('conductor');
   plans = signal<SaasPlan[]>([]);
   planOptions = signal<UiSelectOption[]>([]);
   loading = signal(false);
+  checkoutUrl = signal<string | null>(null);
 
   conductorForm = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.minLength(2)]],
@@ -89,6 +93,25 @@ export class RegisterComponent implements OnInit {
 
   setType(type: AccountType): void {
     this.accountType.set(type);
+  }
+
+  ngAfterViewInit(): void {
+    const generateQr = () => {
+      const url = this.checkoutUrl();
+      if (url && this.qrCanvas?.nativeElement) {
+        QRCode.toCanvas(this.qrCanvas.nativeElement, url, {
+          width: 220,
+          margin: 2,
+        });
+      }
+    };
+    // Poll for URL changes (simple approach without RxJS)
+    const interval = setInterval(() => {
+      if (this.checkoutUrl()) {
+        generateQr();
+        clearInterval(interval);
+      }
+    }, 200);
   }
 
   invalidConductor(field: keyof typeof this.conductorForm.controls): boolean {
@@ -155,6 +178,41 @@ export class RegisterComponent implements OnInit {
     this.tallerForm.markAllAsTouched();
     if (this.tallerForm.invalid) return;
     const v = this.tallerForm.getRawValue();
+    const selectedPlan = this.plans().find((p) => p.id === v.plan_id);
+
+    // Plan con precio → flujo de pago (AcquireMock)
+    if (selectedPlan && selectedPlan.precio_mensual > 0) {
+      this.loading.set(true);
+      this.publicApi
+        .planCheckout({
+          plan_id: v.plan_id,
+          admin_email: v.admin_email,
+          admin_nombre: v.admin_nombre,
+          org_nombre: v.nombre_organizacion,
+          dominio: v.dominio || undefined,
+        })
+        .subscribe({
+          next: (res) => {
+            this.loading.set(false);
+            this.checkoutUrl.set(res.pageUrl);
+            this.snack.open(
+              'Complete el pago para crear su red de talleres',
+              'OK',
+              { duration: 5000 }
+            );
+          },
+          error: (err) => {
+            this.loading.set(false);
+            const msg = err?.error?.detail ?? 'No se pudo crear la sesión de pago';
+            this.snack.open(typeof msg === 'string' ? msg : 'Error al registrar', 'Cerrar', {
+              duration: 5000,
+            });
+          },
+        });
+      return;
+    }
+
+    // Plan gratuito → flujo directo con password
     if (v.password !== v.password2) {
       this.snack.open('Las contraseñas no coinciden', 'Cerrar', { duration: 4000 });
       return;

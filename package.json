@@ -23,6 +23,7 @@
     "echarts": "^5.5.1",
     "jwt-decode": "^4.0.0",
     "ngx-echarts": "^18.0.0",
+    "qrcode": "^1.5.4",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.3",
     "zone.js": "~0.14.10"
@@ -32,6 +33,7 @@
     "@angular/cli": "^18.2.0",
     "@angular/compiler-cli": "^18.2.0",
     "@types/jasmine": "~5.1.4",
+    "@types/qrcode": "^1.5.6",
     "jasmine-core": "~5.1.2",
     "karma": "~6.4.4",
     "karma-chrome-launcher": "~3.2.0",

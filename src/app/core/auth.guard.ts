@@ -10,6 +10,12 @@ export function authGuard(allowedRoles: string[]): CanActivateFn {
     if (!auth.isLoggedIn) {
       return router.createUrlTree(['/login']);
     }
+    if (auth.mustChangePassword) {
+      const url = router.routerState.snapshot.url;
+      if (url !== '/cambiar-contrasena' && url !== '/login') {
+        return router.createUrlTree(['/cambiar-contrasena']);
+      }
+    }
     if (auth.role && allowedRoles.includes(auth.role)) {
       return true;
     }

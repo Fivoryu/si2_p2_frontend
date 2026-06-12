@@ -21,6 +21,14 @@ export interface TenantSignupPayload {
   password: string;
 }
 
+export interface PlanCheckoutPayload {
+  plan_id: string;
+  admin_email: string;
+  admin_nombre: string;
+  org_nombre: string;
+  dominio?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PublicApiService {
   constructor(private api: ApiService) {}
@@ -32,6 +40,13 @@ export class PublicApiService {
   signupTenant(body: TenantSignupPayload) {
     return this.api.post<{ tenant_id: string; usuario_id: string; mensaje: string }>(
       '/public/signup',
+      body
+    );
+  }
+
+  planCheckout(body: PlanCheckoutPayload) {
+    return this.api.post<{ pageUrl: string; invoice_id: string }>(
+      '/pagos/plan-checkout',
       body
     );
   }

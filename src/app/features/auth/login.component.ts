@@ -57,7 +57,11 @@ export class LoginComponent {
     this.auth.login(email, password).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate([defaultRouteForRole(this.auth.role)]);
+        if (this.auth.mustChangePassword) {
+          this.router.navigate(['/cambiar-contrasena']);
+        } else {
+          this.router.navigate([defaultRouteForRole(this.auth.role)]);
+        }
       },
       error: (err) => {
         this.loading = false;
